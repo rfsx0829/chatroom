@@ -2,7 +2,9 @@ package service
 
 import (
 	"crypto/md5"
-	"net/http"
+	"encoding/hex"
+
+	"github.com/gorilla/websocket"
 
 	"github.com/rfsx0829/chatroom/server/mysql"
 )
@@ -26,15 +28,15 @@ func (p *Platform) SignUp(name, pass string) error {
 	return mysql.Default.AddUser(&pf)
 }
 
-func (p *Platform) SignInWithName(w http.ResponseWriter, r *http.Request, name, pass string) (int, error) {
-	return p.signIn(w, r, name, "", pass)
+func (p *Platform) SignInWithName(con *websocket.Conn, name, pass string) (int, error) {
+	return p.signIn(con, name, "", pass)
 }
 
-func (p *Platform) SignInWithEmail(w http.ResponseWriter, r *http.Request, email, pass string) (int, error) {
-	return p.signIn(w, r, "", email, pass)
+func (p *Platform) SignInWithEmail(con *websocket.Conn, email, pass string) (int, error) {
+	return p.signIn(con, "", email, pass)
 }
 
-func (p *Platform) signIn(w http.ResponseWriter, r *http.Request, name, email, pass string) (int, error) {
+func (p *Platform) signIn(con *websocket.Conn, name, email, pass string) (int, error) {
 	info, err := mysql.Default.GetUserInfo(name, email)
 	if err != nil {
 		return 0, err
@@ -42,11 +44,6 @@ func (p *Platform) signIn(w http.ResponseWriter, r *http.Request, name, email, p
 
 	if info.Pass != Hash(pass) {
 		return 0, InvalidPass
-	}
-
-	con, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		return 0, err
 	}
 
 	user := Person{
@@ -62,8 +59,12 @@ func (p *Platform) signIn(w http.ResponseWriter, r *http.Request, name, email, p
 	return info.Uid, nil
 }
 
+func (p *Platform) AddEmail(uid int, email string) error {
+	return mysql.Default.AddEmail(uid, email)
+}
+
 func Hash(source string) string {
 	h := md5.New()
 	h.Write([]byte(source))
-	return string(h.Sum(nil))
+	return hex.EncodeToString(h.Sum(nil))
 }

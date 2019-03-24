@@ -39,9 +39,9 @@ func (c *Conn) GetUserInfo(name, email string) (*Profile, error) {
 	)
 
 	if name == "" {
-		str += fmt.Sprintf("email='%s'", email)
+		str += fmt.Sprintf("where email='%s'", email)
 	} else {
-		str += fmt.Sprintf("name='%s'", name)
+		str += fmt.Sprintf("where name='%s'", name)
 	}
 
 	rows, err := c.db.Query(str)

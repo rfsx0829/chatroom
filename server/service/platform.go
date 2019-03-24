@@ -1,12 +1,7 @@
 package service
 
-import (
-	"github.com/gorilla/websocket"
-)
-
 var (
-	Client   *Platform
-	upgrader = websocket.Upgrader{}
+	Client *Platform
 )
 
 func init() {
@@ -23,11 +18,11 @@ func NewPlatform() *Platform {
 	}
 }
 
-func (p *Platform) CreateRoom(name, pass string, isPri bool, ownerId int) *Room {
+func (p *Platform) CreateRoom(name, pass string, isPri bool, ownerId int) int {
 	return p.createRoom(name, pass, isPri, ownerId)
 }
 
-func (p *Platform) createRoom(name, pass string, isPri bool, ownerId int) *Room {
+func (p *Platform) createRoom(name, pass string, isPri bool, ownerId int) int {
 	r := &Room{
 		Id:    p.getUnUsedId(),
 		Name:  name,
@@ -43,7 +38,7 @@ func (p *Platform) createRoom(name, pass string, isPri bool, ownerId int) *Room 
 
 	p.RoomList = append(p.RoomList, r)
 	p.EnterRoom(r.Id, ownerId, pass)
-	return r
+	return r.Id
 }
 
 func (p *Platform) getUnUsedId() int {
