@@ -1,5 +1,7 @@
 package controller
 
+import "github.com/rfsx0829/chatroom/server/service"
+
 type UserInfo struct {
 	Uid   int    `json:"uid"`
 	Name  string `json:"name"`
@@ -14,11 +16,10 @@ type Room struct {
 }
 
 type FormData struct {
-	Oper   Op       `json:"oper"`
-	User   UserInfo `json:"user"`
-	Room   Room     `json:"room"`
-	SendTo int      `json:"sendto"`
-	Mes    string   `json:"mes"`
+	Oper Op               `json:"oper"`
+	User UserInfo         `json:"user"`
+	Room Room             `json:"room"`
+	Mes  *service.Message `json:"mes"`
 }
 
 type Response struct {

@@ -11,7 +11,7 @@ type Message struct {
 	Time time.Time `json:"time"`
 }
 
-func (p *Platform) SendMes(uid int, mes string) error {
+func (p *Platform) SendMes(uid int, mes *Message) error {
 	ur := p.GetUserById(uid)
 	if ur == nil {
 		return InvalidUid
@@ -22,16 +22,10 @@ func (p *Platform) SendMes(uid int, mes string) error {
 		return InvalidRid
 	}
 
-	m := &Message{
-		Text: mes,
-		From: uid,
-		To:   -1,
-		Time: time.Now(),
-	}
-	return rm.broadCastMes(m)
+	return rm.broadCastMes(mes)
 }
 
-func (p *Platform) SendToBox(uid, to int, mes string) error {
+func (p *Platform) SendToBox(uid, to int, mes *Message) error {
 	ur := p.GetUserById(uid)
 	if ur == nil {
 		return InvalidRid
@@ -42,13 +36,6 @@ func (p *Platform) SendToBox(uid, to int, mes string) error {
 		return InvalidRid
 	}
 
-	mess := Message{
-		Text: mes,
-		From: uid,
-		To:   to,
-		Time: time.Now(),
-	}
-
-	tur.MessageBox = append(tur.MessageBox, &mess)
+	tur.MessageBox = append(tur.MessageBox, mes)
 	return nil
 }

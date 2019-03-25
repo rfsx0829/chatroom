@@ -147,7 +147,7 @@ func SendMesDealer(x *FormData, res *Response) error {
 }
 
 func SendBoxDealer(x *FormData, res *Response) error {
-	err := service.Client.SendToBox(x.User.Uid, x.SendTo, x.Mes)
+	err := service.Client.SendToBox(x.User.Uid, x.Mes)
 	if err != nil {
 		return err
 	}
