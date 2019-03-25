@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 
 	"github.com/gorilla/websocket"
-
 	"github.com/rfsx0829/chatroom/server/mysql"
 )
 

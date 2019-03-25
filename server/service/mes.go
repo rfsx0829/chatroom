@@ -1,14 +1,23 @@
 package service
 
-import "time"
+import (
+	"time"
+)
+
+type Message struct {
+	Text string    `json:"text"`
+	From int       `json:"from"`
+	To   int       `json:"to"`
+	Time time.Time `json:"time"`
+}
 
 func (p *Platform) SendMes(uid int, mes string) error {
-	ur := p.getUserById(uid)
+	ur := p.GetUserById(uid)
 	if ur == nil {
 		return InvalidUid
 	}
 
-	rm := p.getRoomById(ur.RoomId)
+	rm := p.GetRoomById(ur.RoomId)
 	if rm == nil {
 		return InvalidRid
 	}
@@ -23,12 +32,12 @@ func (p *Platform) SendMes(uid int, mes string) error {
 }
 
 func (p *Platform) SendToBox(uid, to int, mes string) error {
-	ur := p.getUserById(uid)
+	ur := p.GetUserById(uid)
 	if ur == nil {
 		return InvalidRid
 	}
 
-	tur := p.getUserById(uid)
+	tur := p.GetUserById(uid)
 	if tur == nil {
 		return InvalidRid
 	}
@@ -41,17 +50,5 @@ func (p *Platform) SendToBox(uid, to int, mes string) error {
 	}
 
 	tur.MessageBox = append(tur.MessageBox, &mess)
-	return nil
-}
-
-func (r *Room) broadCastMes(mes *Message) (err error) {
-	r.MessageQueue = append(r.MessageQueue, mes)
-
-	for _, e := range r.PersonList {
-		err = e.Conn.WriteJSON(mes)
-		if err != nil {
-			return err
-		}
-	}
 	return nil
 }

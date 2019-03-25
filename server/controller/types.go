@@ -27,20 +27,6 @@ type Response struct {
 	Extra  interface{} `json:"extra"`
 }
 
-type Op uint32
-
-const (
-	DefaultOper Op = iota
-	SignUp
-	AddEmail
-	Create
-	Enter
-	Leave
-	SendMes
-	SendBox
-	Close
-)
-
 /*
 {
 	"oper": 1,
