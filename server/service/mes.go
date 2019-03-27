@@ -25,7 +25,7 @@ func (p *Platform) SendMes(uid int, mes *Message) error {
 	return rm.broadCastMes(mes)
 }
 
-func (p *Platform) SendToBox(uid, to int, mes *Message) error {
+func (p *Platform) SendToBox(uid int, mes *Message) error {
 	ur := p.GetUserById(uid)
 	if ur == nil {
 		return InvalidRid
