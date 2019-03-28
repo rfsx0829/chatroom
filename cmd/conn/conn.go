@@ -1,9 +1,11 @@
-package types
+package conn
 
 import (
 	"net/url"
 
 	"github.com/gorilla/websocket"
+	"github.com/rfsx0829/chatroom/cmd/types"
+	"github.com/rfsx0829/chatroom/cmd/types/oper"
 )
 
 type Conn struct {
@@ -18,9 +20,9 @@ func NewConn(u *url.URL) (Conn, error) {
 	return Conn{c}, nil
 }
 
-func (con Conn) WriteAndRead(fd *FormData) (*Response, error) {
+func (con Conn) WriteAndRead(fd *types.FormData) (*types.Response, error) {
 	var (
-		x   Response
+		x   types.Response
 		err error
 	)
 
@@ -33,7 +35,7 @@ func (con Conn) WriteAndRead(fd *FormData) (*Response, error) {
 	return &x, err
 }
 
-func (con Conn) Close(fd *FormData) error {
-	fd.Oper = Close
+func (con Conn) Close(fd *types.FormData) error {
+	fd.Oper = oper.Close
 	return con.cn.WriteJSON(fd)
 }
