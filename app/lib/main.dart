@@ -7,6 +7,7 @@ void main() => runApp(
     home: MyApp(),
     theme: ThemeData(
     ),
+    debugShowCheckedModeBanner: false,
   )
 );
 

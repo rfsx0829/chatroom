@@ -31,12 +31,16 @@ class _CardFulDefault extends State {
               children: <Widget>[
                 FlatButton(
                   child: Text("滚粗", style: TextStyle(color: Colors.white, fontSize: 28.0),),
-                  onPressed: () => {},
+                  onPressed: () => {
+                    Navigator.of(context).pop()
+                  },
                   padding: EdgeInsets.all(10.0),
                 ),
                 FlatButton(
                   child: Text("了解", style: TextStyle(color: Colors.white, fontSize: 28.0),),
-                  onPressed: () => {},
+                  onPressed: () => {
+                    Navigator.of(context).pop()
+                  },
                   padding: EdgeInsets.all(10.0),
                 )
               ],
