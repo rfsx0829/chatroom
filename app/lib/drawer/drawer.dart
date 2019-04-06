@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'pages/about.dart';
+import 'header/header.dart';
+import 'dart:io';
 
-class DrawerWidget extends StatelessWidget {
+class DrawerWidget extends StatefulWidget {
+  @override
+  DrawerState createState() => DrawerState();
+}
+
+class DrawerState extends State<DrawerWidget> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.all(0.0),
         children: <Widget>[
-          UserAccountsDrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.green,
-            ),
-            accountName: Text("Peter"),
-            accountEmail: Text("rfsx0829@163.com"),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.white,
-            ),
+          UserDrawerHeader(
+            userName: "Tom",
+            userEmail: "someone@163.com",
           ),
           ListTile(
             title: Text("主页"),
@@ -36,8 +37,9 @@ class DrawerWidget extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text("退出"),
+            title: Text("长按退出"),
             subtitle: Text("Exit"),
+            onLongPress: () => exit(0),
           )
         ],
       )

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'tabs/chat.dart';
+import 'tabs/room.dart';
+import 'tabs/persons.dart';
 import 'drawer/drawer.dart';
+import 'package:app/constant/color.dart';
 
 void main() => runApp(
   MaterialApp(
@@ -65,12 +68,12 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       appBar: AppBar(
         title: Text("Hello"),
         bottom: getTabBar(),
-        backgroundColor: Colors.green,
+        backgroundColor: ConstantColor.darkgrey,
       ),
       body: getTabBarView(<StatefulWidget>[
         ChatTab(),
-        ChatTab(),
-        ChatTab(),
+        RoomsTab(),
+        PersonsTab(),
       ]),
       drawer: DrawerWidget(),
     );

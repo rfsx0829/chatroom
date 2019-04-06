@@ -12,9 +12,16 @@ class ChatState extends State<ChatTab> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        CardFulDefault(),
-        CardFulDefault(),
-        CardFulDefault(),
+        CardWidget(
+          cardChild: ListTile(
+            title: Text("Hello World", style: TextStyle(color: Colors.white, fontSize: 40.0),),
+            contentPadding: EdgeInsets.all(20.0),
+          ),
+          lButtonText: "酷哦",
+          lButtonFunc: () {
+            print("Hello");
+          },
+        ),
       ],
     );
   }

@@ -1,46 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:app/constant/color.dart';
 
-class CardFulDefault extends StatefulWidget {
-  const CardFulDefault() : super();
+class CardWidget extends StatefulWidget {
+  const CardWidget({
+    Key key,
+    @required this.cardChild,
+    this.lButtonText,
+    this.lButtonFunc,
+    this.rButtonText,
+    this.rButtonFunc,
+    this.cardColor = ConstantColor.darkgrey,
+    this.elevation = 20.0,
+  }) : super(key: key);
+
+  final Color cardColor;
+  final double elevation;
+  final Widget cardChild;
+
+  final String lButtonText;
+  final lButtonFunc;
+
+  final String rButtonText;
+  final rButtonFunc;
 
   @override
-  State<StatefulWidget> createState() => _CardFulDefault();
+  CardWidgetState createState() => CardWidgetState();
 }
 
-class _CardFulDefault extends State {
+class CardWidgetState extends State<CardWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
-      color: Colors.green,
-      elevation: 20.0,
+      color: widget.cardColor,
+      elevation: widget.elevation,
       margin: EdgeInsets.all(20.0),
       semanticContainer: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const ListTile(
-            leading: Icon(Icons.access_time, color: Colors.white,),
-            title: Text("Hello World", style: TextStyle(color: Colors.white, fontSize: 40.0),),
-            subtitle: Text("Sub Title", style: TextStyle(color: Colors.white, fontSize: 20.0),),
-            contentPadding: EdgeInsets.all(20.0),
-          ),
+          widget.cardChild,
           ButtonTheme.bar(
             child: ButtonBar(
               children: <Widget>[
                 FlatButton(
-                  child: Text("滚粗", style: TextStyle(color: Colors.white, fontSize: 28.0),),
-                  onPressed: () => {
-                    Navigator.of(context).pop()
-                  },
+                  child: Text(widget.lButtonText ?? "滚粗", style: TextStyle(color: Colors.white, fontSize: 20.0),),
+                  onPressed: widget.lButtonFunc,
                   padding: EdgeInsets.all(10.0),
                 ),
                 FlatButton(
-                  child: Text("了解", style: TextStyle(color: Colors.white, fontSize: 28.0),),
-                  onPressed: () => {
-                    Navigator.of(context).pop()
-                  },
+                  child: Text(widget.rButtonText ?? "了解", style: TextStyle(color: Colors.white, fontSize: 20.0),),
+                  onPressed: widget.rButtonFunc,
                   padding: EdgeInsets.all(10.0),
                 )
               ],

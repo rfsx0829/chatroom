@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:app/tools/dio.dart';
+import 'dart:convert';
 
 class AboutPage extends StatefulWidget {
   @override
@@ -6,15 +8,39 @@ class AboutPage extends StatefulWidget {
 }
 
 class AboutState extends State<AboutPage> {
+  String version = "获取版本号失败...";
+  bool versionOK = false;
+
   @override
   Widget build(BuildContext context) {
+    if (!versionOK) {
+      getVersion();
+      versionOK = true;
+    }
     return Scaffold(
       body: Center(
-        child: Text("About Page", style: TextStyle(fontSize: 30.0),),
+        child: Container(
+          margin: EdgeInsets.only(top: 200.0),
+          child: Column(
+            children: <Widget>[
+              Text("About Page", style: TextStyle(fontSize: 50.0),),
+              Text("Version", style: TextStyle(fontSize: 50.0),),
+              Text(version, style: TextStyle(fontSize: 50.0),),
+            ],
+          )
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatButton(),
     );
+  }
+
+  void getVersion() async {
+    var res = await Tools.get("/latest");
+    var data = jsonDecode(res.data.toString());
+    setState(() {
+      version = data["version"];
+    });
   }
 }
 
@@ -28,11 +54,16 @@ class FloatButton extends StatelessWidget {
       onPressed: () => {
         Scaffold.of(context).showSnackBar(
           SnackBar(
-            content: Text("还在开发中哦 亲～"),
+            content: ListTile(
+              leading: Icon(Icons.access_time),
+              title: Text("还在开发中哦 亲～"),
+            ),
             action: SnackBarAction(
               label: "知道了",
               textColor: Colors.white,
-              onPressed: () => {},
+              onPressed: () => {
+                Navigator.of(context).pop()
+              },
             ),
             duration: Duration(seconds: 2),
           )
