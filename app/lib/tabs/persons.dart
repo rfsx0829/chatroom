@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app/card/info_card.dart';
 
 class PersonsTab extends StatefulWidget {
   @override
@@ -9,7 +10,7 @@ class PersonsState extends State<PersonsTab> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text("Persons"),
+      child: InfoCard(),
     );
   }
 }

@@ -11,11 +11,14 @@ class CardWidget extends StatefulWidget {
     this.rButtonFunc,
     this.cardColor = ConstantColor.darkgrey,
     this.elevation = 20.0,
+    this.margin = const EdgeInsets.all(20.0),
   }) : super(key: key);
 
   final Color cardColor;
-  final double elevation;
   final Widget cardChild;
+
+  final double elevation;
+  final EdgeInsetsGeometry margin;
 
   final String lButtonText;
   final lButtonFunc;
@@ -34,7 +37,7 @@ class CardWidgetState extends State<CardWidget> {
       clipBehavior: Clip.antiAlias,
       color: widget.cardColor,
       elevation: widget.elevation,
-      margin: EdgeInsets.all(20.0),
+      margin: widget.margin,
       semanticContainer: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Column(

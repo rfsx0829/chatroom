@@ -9,19 +9,45 @@ class ChatTab extends StatefulWidget {
 class ChatState extends State<ChatTab> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        CardWidget(
-          cardChild: ListTile(
-            title: Text("Hello World", style: TextStyle(color: Colors.white, fontSize: 40.0),),
-            contentPadding: EdgeInsets.all(20.0),
+    var card = CardWidget(
+      cardChild: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            child: TextField(
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.account_circle, color: Colors.white),
+                labelText: "用户名",
+                labelStyle: TextStyle(color: Colors.white),
+              ),
+              style: TextStyle(color: Colors.white),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            padding: EdgeInsets.only(top: 20.0, bottom: 10.0, left: 20.0, right: 20.0),
           ),
-          lButtonText: "酷哦",
-          lButtonFunc: () {
-            print("Hello");
-          },
-        ),
+          Container(
+            child: TextField(
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.vpn_key, color: Colors.white,),
+                labelText: "密码",
+                labelStyle: TextStyle(color: Colors.white),
+              ),
+              style: TextStyle(color: Colors.white),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            padding: EdgeInsets.all(20.0),
+          ),
+        ],
+      ),
+      lButtonText: "注册",
+      rButtonText: "登陆",
+      elevation: 10.0,
+      margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0, top: 60.0),
+    );
+
+    return Column(
+      children: <Widget>[
+        card,
       ],
     );
   }
