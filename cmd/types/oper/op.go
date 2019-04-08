@@ -1,5 +1,6 @@
 package oper
 
+// Op is the shortcut of Operation
 type Op uint32
 
 const (

@@ -10,15 +10,17 @@ import (
 	"github.com/rfsx0829/chatroom/cmd/types/oper"
 )
 
+// Person represent a person.
 type Person struct {
 	Info       *types.UserInfo
 	MessageBox []*types.Message
 	Conn       *conn.Conn
 	FormData   *types.FormData
-	RoomId     int
+	RoomID     int
 	RoomToken  string
 }
 
+// AddEmail just do the thing like its name.
 func (p *Person) AddEmail(email string) error {
 	p.FormData.Oper = oper.AddEmail
 	p.FormData.User.Email = email
@@ -32,6 +34,7 @@ func (p *Person) AddEmail(email string) error {
 	return nil
 }
 
+// CreateRoom with room name and password.
 func (p *Person) CreateRoom(name, pass string) error {
 	p.FormData.Oper = oper.Create
 	p.FormData.Room.Name = name
@@ -45,11 +48,12 @@ func (p *Person) CreateRoom(name, pass string) error {
 	fmt.Println(res.Text)
 	if res.Status == http.StatusOK {
 		rid := res.Extra.(map[string]interface{})["rid"].(float64)
-		p.RoomId = int(rid)
+		p.RoomID = int(rid)
 	}
 	return nil
 }
 
+// EnterRoom let the person enter the room use password.
 func (p *Person) EnterRoom(rid int, pass string) error {
 	p.FormData.Oper = oper.Enter
 	p.FormData.Room.Rid = rid
@@ -64,6 +68,7 @@ func (p *Person) EnterRoom(rid int, pass string) error {
 	return nil
 }
 
+// LeaveRoom just leave room.
 func (p *Person) LeaveRoom() error {
 	p.FormData.Oper = oper.Leave
 
@@ -76,9 +81,10 @@ func (p *Person) LeaveRoom() error {
 	return nil
 }
 
+// SendMessage send a message to room.
 func (p *Person) SendMessage(content string) error {
 	p.FormData.Oper = oper.SendMes
-	p.FormData.Mes.From = p.Info.Uid
+	p.FormData.Mes.From = p.Info.UID
 	p.FormData.Mes.Text = content
 	p.FormData.Mes.To = -1
 	p.FormData.Mes.Time = time.Now()
@@ -92,9 +98,10 @@ func (p *Person) SendMessage(content string) error {
 	return nil
 }
 
+// SendToBox send a message to single person.
 func (p *Person) SendToBox(content string, sendTo int) error {
 	p.FormData.Oper = oper.SendBox
-	p.FormData.Mes.From = p.Info.Uid
+	p.FormData.Mes.From = p.Info.UID
 	p.FormData.Mes.Text = content
 	p.FormData.Mes.To = sendTo
 	p.FormData.Mes.Time = time.Now()
@@ -108,6 +115,7 @@ func (p *Person) SendToBox(content string, sendTo int) error {
 	return nil
 }
 
+// GetRoomList get the room list
 func (p *Person) GetRoomList() error {
 	p.FormData.Oper = oper.GetRoomList
 
@@ -121,6 +129,7 @@ func (p *Person) GetRoomList() error {
 	return nil
 }
 
+// GetPersonsInRoom get the list of online person in room.
 func (p *Person) GetPersonsInRoom() error {
 	p.FormData.Oper = oper.GetPersonsInRoom
 
@@ -134,6 +143,7 @@ func (p *Person) GetPersonsInRoom() error {
 	return nil
 }
 
+// GoOffline close the conn of a person.
 func (p *Person) GoOffline() error {
 	p.FormData.Oper = oper.Close
 	return p.Conn.Close(p.FormData)
