@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:app/person/person.dart';
 import 'dart:convert';
-import 'package:app/tools/dio.dart';
 
 class RoomsTab extends StatefulWidget {
   @override
@@ -37,12 +37,5 @@ class RoomsState extends State<RoomsTab> {
   }
 
   void updateVersion() async {
-    var data = {
-      "vers": newVersion,
-      "pass": "password",
-    };
-    var jsonData = jsonEncode(data);
-    var res = await Tools.post("/update", jsonData);
-    print(res.data);
   }
 }

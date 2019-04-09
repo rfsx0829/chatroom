@@ -10,7 +10,10 @@ class PersonsState extends State<PersonsTab> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: InfoCard(),
+      child: InfoCard(
+        uid: 1001,
+        name: "Peter",
+      ),
     );
   }
 }
