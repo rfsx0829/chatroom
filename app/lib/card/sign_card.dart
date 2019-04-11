@@ -24,7 +24,7 @@ class SignCardState extends State<SignCard> {
               style: TextStyle(color: ConstantColor.fontColor),
               keyboardType: TextInputType.emailAddress,
             ),
-            padding: EdgeInsets.only(top: 20.0, bottom: 10.0, left: 20.0, right: 20.0),
+            padding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 10.0)
           ),
           Container(
             child: TextField(

@@ -42,10 +42,10 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     return TabBar(
       tabs: <Widget>[
         Tab(
-          icon: Icon(Icons.room),
+          icon: Icon(Icons.account_balance),
         ),
         Tab(
-          icon: Icon(Icons.room),
+          icon: Icon(Icons.list),
         ),
         Tab(
           icon: Icon(Icons.group),

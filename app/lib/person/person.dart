@@ -11,6 +11,7 @@ class Person{
   static WebSocket conn;
   static int roomID;
   static String roomToken;
+  static bool online = false;
 
   static FormData formData = FormData();
 
@@ -63,6 +64,13 @@ class Oper{
 }
 
 class UserInfo {
+  UserInfo({
+    this.uid,
+    this.name,
+    this.pass,
+    this.email = ""
+  });
+  
   int uid = 0;
   String name = "";
   String pass = "";
@@ -77,6 +85,12 @@ class UserInfo {
 }
 
 class RoomInfo {
+  RoomInfo({
+    this.rid,
+    this.name,
+    this.pass
+  });
+
   int rid = 0;
   String name = "";
   String pass = "";
@@ -98,8 +112,6 @@ class Message {
     "text": this.text,
     "from": this.from,
     "to": this.to,
-    "time": this.time.toIso8601String(),
+    "time": (this.time ?? DateTime.now()).toIso8601String(),
   };
-
-  String toString() => this.toJson().toString();
 }
