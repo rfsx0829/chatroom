@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app/card/card.dart';
 import 'package:app/constant/color.dart';
+import 'package:app/person/person.dart';
 
 class SignCard extends StatefulWidget {
   @override
@@ -8,6 +9,8 @@ class SignCard extends StatefulWidget {
 }
 
 class SignCardState extends State<SignCard> {
+  String name, pass;
+
   @override
   Widget build(BuildContext context) {
     var card = CardWidget(
@@ -23,6 +26,11 @@ class SignCardState extends State<SignCard> {
               ),
               style: TextStyle(color: ConstantColor.fontColor),
               keyboardType: TextInputType.emailAddress,
+              onChanged: (str) {
+                setState(() {
+                  name = str;
+                });
+              }
             ),
             padding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 10.0)
           ),
@@ -35,6 +43,11 @@ class SignCardState extends State<SignCard> {
               ),
               style: TextStyle(color: ConstantColor.fontColor),
               keyboardType: TextInputType.emailAddress,
+              onChanged: (str) {
+                setState(() {
+                  pass = str;
+                });
+              }
             ),
             padding: EdgeInsets.all(20.0),
           ),
@@ -43,12 +56,23 @@ class SignCardState extends State<SignCard> {
       lButtonText: "注册",
       rButtonText: "登陆",
       elevation: 10.0,
-      lButtonFunc: () => {},
-      rButtonFunc: () => {},
+      lButtonFunc: signUp,
+      rButtonFunc: signIn,
     );
 
     return Center(
       child: card,
     );
+  }
+
+  void signUp() async {
+    Person.formData.oper = Oper.SignUp;
+    Person.formData.user.name = name;
+    Person.formData.user.pass = pass;
+
+    Person.sendReq();
+  }
+
+  void signIn() async {
   }
 }

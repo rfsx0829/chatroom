@@ -3,7 +3,7 @@ import 'tabs/chat.dart';
 import 'tabs/room.dart';
 import 'tabs/persons.dart';
 import 'drawer/drawer.dart';
-import 'package:app/constant/color.dart';
+import 'constant/color.dart';
 
 void main() => runApp(
   MaterialApp(
@@ -68,7 +68,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       appBar: AppBar(
         title: Text("Hello"),
         bottom: getTabBar(),
-        backgroundColor: ConstantColor.darkgrey,
+        backgroundColor: ConstantColor.bgColor,
       ),
       body: getTabBarView(<StatefulWidget>[
         ChatTab(),

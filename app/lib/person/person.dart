@@ -14,23 +14,27 @@ class Person{
   static bool online = false;
 
   static FormData formData = FormData();
+  static dynamic response;
 
   static void initConn() async {
-    conn = await WebSocket.connect("ws://127.0.0.1:8080/ws");
+    conn = await WebSocket.connect("ws://192.168.2.1:8080/api/main");
+    conn.listen(onData);
   }
 
   static void close() async {
     await conn.close();
   }
 
-  static void signUp() async {
-    conn.add("");
+  static void sendReq() async {
+    if(conn == null) {
+      initConn();
+    }
+    var data = jsonEncode(formData);
+    conn.add(data);
   }
 
-  static void prt() {
-    var data = jsonEncode(formData);
-
-    print(data);
+  static void onData(str) {
+    response = jsonDecode(str);
   }
 }
 
@@ -112,6 +116,12 @@ class Message {
     "text": this.text,
     "from": this.from,
     "to": this.to,
-    "time": (this.time ?? DateTime.now()).toIso8601String(),
+    "time": this.timeString(),
   };
+
+  String timeString() {
+    var str = (this.time ?? DateTime.now()).toIso8601String();
+    var sub = str.substring(0, 19) + "+08:00";
+    return sub;
+  }
 }
