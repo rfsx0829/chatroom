@@ -19,6 +19,7 @@ func (r *Room) broadCastMes(mes *Message) (err error) {
 	r.MessageQueue = append(r.MessageQueue, mes)
 	res := Response{
 		Status: http.StatusOK,
+		Oper:   7, // 7 for SendMes
 		Text:   "Receive Message",
 		Extra:  mes,
 	}

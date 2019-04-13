@@ -1,5 +1,6 @@
 package mysql
 
+// AddEmail call updateEmail
 func (c *Conn) AddEmail(uid int, email string) error {
 	return c.updateEmail(uid, email)
 }

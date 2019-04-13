@@ -93,6 +93,7 @@ func SignUpDealer(x *FormData, res *Response) error {
 	}
 
 	res.Text = "SignUp Success !"
+	res.Extra = nil
 	return nil
 }
 
@@ -103,6 +104,7 @@ func AddEmailDealer(x *FormData, res *Response) error {
 	}
 
 	res.Text = "AddEmail Success !"
+	res.Extra = nil
 	return nil
 }
 
@@ -123,6 +125,7 @@ func EnterDealer(x *FormData, res *Response) error {
 	}
 
 	res.Text = "Enter Room Success !"
+	res.Extra = nil
 	return nil
 }
 
@@ -133,6 +136,7 @@ func LeaveDealer(x *FormData, res *Response) error {
 	}
 
 	res.Text = "LeaveRoom Success !"
+	res.Extra = nil
 	return nil
 }
 
@@ -143,6 +147,7 @@ func SendMesDealer(x *FormData, res *Response) error {
 	}
 
 	res.Text = "Send Message Success !"
+	res.Extra = nil
 	return nil
 }
 
@@ -153,6 +158,7 @@ func SendBoxDealer(x *FormData, res *Response) error {
 	}
 
 	res.Text = "Send To Box Success !"
+	res.Extra = nil
 	return nil
 }
 

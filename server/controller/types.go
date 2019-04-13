@@ -24,6 +24,7 @@ type FormData struct {
 
 type Response struct {
 	Status int         `json:"status"`
+	Oper   Op          `json:"oper"`
 	Text   string      `json:"text"`
 	Extra  interface{} `json:"extra"`
 }

@@ -25,7 +25,11 @@ func NewConn(source string) (*Conn, error) {
 
 func InitDefault(source string) (err error) {
 	Default, err = NewConn(source)
-	return err
+	if err != nil {
+		return err
+	}
+
+	return Default.CreateTable()
 }
 
 func (c *Conn) CreateDatabase() error {

@@ -37,12 +37,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println(err)
 
-				res.Text = err.Error()
-				con.WriteJSON(res)
-				continue
+				return
 			}
 
 			log.Println(x.Oper)
+			res.Oper = x.Oper
 
 			if x.Oper == Close {
 				res.Status = http.StatusOK
@@ -50,8 +49,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 				log.Println(res.Text)
 
-				con.WriteJSON(res)
-				con.Close()
 				return
 			}
 
@@ -61,8 +58,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 					log.Println(err)
 
 					res.Text = err.Error()
-					con.WriteJSON(res)
-					con.Close()
 					return
 				} else {
 					log.Println("OK", res.Extra)
@@ -77,15 +72,13 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 				err = dl(&x, &res)
 				if err != nil {
 					log.Println(err)
-
 					res.Text = err.Error()
-					con.WriteJSON(res)
 				} else {
 					log.Println("OK", res.Extra)
 
 					res.Status = http.StatusOK
-					con.WriteJSON(res)
 				}
+				con.WriteJSON(res)
 			}
 		}
 	}(con)
