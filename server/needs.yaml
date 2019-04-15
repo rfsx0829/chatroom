@@ -1,0 +1,26 @@
+platform:
+  - user: 
+    - param: uid
+    - opers: [
+      "GetInfo",
+      "SignUp",
+      "SignIn",
+      "LogOut",
+      "Delete"
+    ]
+  - email: 
+    - param: uid
+    - opers: [
+      "Add",
+      "Modify"
+    ]
+  - room: 
+    - param: rid, uid
+    - opers: [
+      "Create",
+      "Modify",
+      "Delete",
+      "Enter",
+      "Leave",
+      "GetList"
+    ]

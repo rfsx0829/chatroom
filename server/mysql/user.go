@@ -31,20 +31,21 @@ func (c *Conn) CheckUserName(name string) (bool, error) {
 	return rows.Next(), nil
 }
 
-func (c *Conn) GetUserInfo(name, email string) (*Profile, error) {
+func (c *Conn) GetUserInfoByName(name string) (*Profile, error) {
+	return c.getUserInfo("name", name)
+}
+
+func (c *Conn) GetUserInfoByEmail(email string) (*Profile, error) {
+	return c.getUserInfo("email", email)
+}
+
+func (c *Conn) getUserInfo(key, value string) (*Profile, error) {
 	var (
 		pf  Profile
 		err error
-		str = Select
 	)
 
-	if name == "" {
-		str += fmt.Sprintf("where email='%s'", email)
-	} else {
-		str += fmt.Sprintf("where name='%s'", name)
-	}
-
-	rows, err := c.db.Query(str)
+	rows, err := c.db.Query(Select + fmt.Sprintf(" where %s='%s'", key, value))
 	if err != nil {
 		return nil, err
 	}
@@ -54,5 +55,5 @@ func (c *Conn) GetUserInfo(name, email string) (*Profile, error) {
 		return &pf, err
 	}
 
-	return nil, errors.New("Invalid name or email !")
+	return nil, errors.New("Invalid " + key + " !")
 }

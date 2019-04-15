@@ -1,5 +1,7 @@
 package mysql
 
+import "errors"
+
 const (
 	TableName      string = "wow.user"
 	Insert         string = "insert into " + TableName + "(name, pass, email)values(?, ?, ?)"
@@ -14,5 +16,12 @@ const (
 		pass     varchar(64)   not null,
 		email    varchar(30)   not null,
         primary key(uid))
-        engine=InnoDB default charset=utf8`
+		engine=InnoDB default charset=utf8`
+)
+
+var (
+	InvalidUID      error = errors.New("Invalid UID !")
+	InvalidName     error = errors.New("Invalid Name !")
+	InvalidEmail    error = errors.New("Invalid Email !")
+	InvalidPassword error = errors.New("Invalid Password !")
 )
