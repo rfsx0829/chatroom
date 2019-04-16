@@ -3,29 +3,31 @@ package main
 import (
 	"log"
 	"net/http"
-	"time"
+
+	"go.uber.org/dig"
 
 	"github.com/rfsx0829/chatroom/server/controller"
 	"github.com/rfsx0829/chatroom/server/mysql"
 )
 
 func main() {
-	source := "root:123456@tcp(192.168.99.104:31255)/wow"
+	container := dig.New()
+	container.Provide(func() string {
+		source := "root:123456@tcp(192.168.99.104:31255)/wow"
+		return source
+	})
 
-	err := mysql.InitDefault(source)
-	count := 0
-	for err != nil && count < 5 {
-		time.Sleep(time.Second * 5)
-		err = mysql.InitDefault(source)
-		count++
-	}
+	err := container.Provide(func(source string) error {
+		return mysql.InitDefault(source)
+	})
 
 	if err != nil {
 		panic(err)
 	}
 
-	http.HandleFunc("/api/main", controller.Handler)
-
-	log.Println("Listen on http://localhost:8080")
-	log.Println(http.ListenAndServe(":8080", nil))
+	container.Invoke(func() {
+		http.HandleFunc("/api/main", controller.Handler)
+		log.Println("Listen on http://localhost:8080")
+		log.Println(http.ListenAndServe(":8080", nil))
+	})
 }
