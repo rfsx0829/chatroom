@@ -36,7 +36,17 @@ func (p *Platform) SignInWithEmail(con *websocket.Conn, email, pass string) (int
 }
 
 func (p *Platform) signIn(con *websocket.Conn, name, email, pass string) (int, error) {
-	info, err := mysql.Default.GetUserInfo(name, email)
+	var (
+		info *mysql.Profile
+		err  error
+	)
+
+	if name != "" {
+		info, err = mysql.Default.GetUserInfoByName(name)
+	} else {
+		info, err = mysql.Default.GetUserInfoByEmail(email)
+	}
+
 	if err != nil {
 		return 0, err
 	}
