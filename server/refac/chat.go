@@ -42,6 +42,9 @@ func (p *Platform) AddUser(id int, name string) {
 		}
 
 		p.UserTable[id] = &u
+	}
+
+	if c, ok := p.ConnPool[id]; !ok || c == nil {
 		p.UserTemp = append(p.UserTemp, id)
 	}
 }
@@ -55,8 +58,37 @@ func (p *Platform) AddConn(conn *websocket.Conn) {
 	id := p.UserTemp[0]
 	p.UserTemp = p.UserTemp[1:]
 
-	if _, ok := p.UserTable[id]; ok {
+	if u, ok := p.UserTable[id]; ok {
 		p.ConnPool[id] = conn
+
+		for _, v := range p.RoomTable {
+			u.enterRoom(v)
+		}
+	}
+
+	go p.routine(id, conn)
+}
+
+func (p *Platform) routine(id int, conn *websocket.Conn) {
+	var x struct {
+		Oper int    `json:"oper"`
+		Mes  string `json:"mes"`
+	}
+
+	for {
+		err := conn.ReadJSON(&x)
+		if err != nil {
+			log.Println("[routine] Error. Will Delete Conn.", err)
+			p.UserTable[id].leaveRoom()
+			p.ConnPool[id] = nil
+			return
+		}
+
+		log.Println("[routine]", x)
+
+		if x.Oper == 1 {
+			p.SendMess(id, &Message{x.Oper, x.Mes})
+		}
 	}
 }
 
@@ -76,7 +108,8 @@ func (p *Platform) CreateRoom(name string) {
 	r := Room{
 		ID:     id,
 		Name:   name,
-		InRoom: make([]*User, 0, 5),
+		inRoom: make([]*User, 0, 5),
+		Nums:   0,
 	}
 
 	p.RoomTable[r.ID] = &r
@@ -95,7 +128,7 @@ func (p *Platform) getUnusedID() int {
 // DeleteRoom delete room
 func (p *Platform) DeleteRoom(id int) {
 	if r, ok := p.RoomTable[id]; ok {
-		for _, e := range r.InRoom {
+		for _, e := range r.inRoom {
 			e.InWhichRoom = nil
 		}
 		delete(p.RoomTable, id)
@@ -107,7 +140,8 @@ func (p *Platform) Enter(uid, rid int) {
 	if u, ok := p.UserTable[uid]; ok {
 		if r, ok := p.RoomTable[rid]; ok {
 			u.InWhichRoom = r
-			r.InRoom = append(r.InRoom, u)
+			r.inRoom = append(r.inRoom, u)
+			r.Nums++
 		}
 	}
 }
@@ -125,7 +159,7 @@ func (p *Platform) Leave(uid int) {
 // SendMess sendmess
 func (p *Platform) SendMess(from int, mes *Message) {
 	if u, ok := p.UserTable[from]; ok {
-		for _, e := range u.InWhichRoom.InRoom {
+		for _, e := range u.InWhichRoom.inRoom {
 			p.send(e.ID, mes)
 		}
 	}
@@ -133,8 +167,7 @@ func (p *Platform) SendMess(from int, mes *Message) {
 
 func (p *Platform) send(to int, mes *Message) {
 	if con, ok := p.ConnPool[to]; ok {
-		err := con.WriteJSON(mes)
-		if err != nil {
+		if err := con.WriteJSON(mes); err != nil {
 			p.errs <- fmt.Errorf("[%d, %v]: %s", to, mes, err.Error())
 		}
 	}
@@ -152,6 +185,15 @@ func (p *Platform) logerr() {
 	}
 }
 
+// GetRoomList return rmlist
+func (p *Platform) GetRoomList() []*Room {
+	list := make([]*Room, 0, len(p.RoomTable))
+	for _, v := range p.RoomTable {
+		list = append(list, v)
+	}
+	return list
+}
+
 // User user
 type User struct {
 	ID          int
@@ -159,24 +201,39 @@ type User struct {
 	InWhichRoom *Room
 }
 
+func (u *User) enterRoom(r *Room) {
+	u.InWhichRoom = r
+	r.inRoom = append(r.inRoom, u)
+}
+
+func (u *User) leaveRoom() {
+	if u.InWhichRoom != nil {
+		u.InWhichRoom.removeUser(u.ID)
+		u.InWhichRoom = nil
+	}
+}
+
 // Room room
 type Room struct {
-	ID     int
-	Name   string
-	InRoom []*User
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Nums   int    `json:"nums"`
+	inRoom []*User
 }
 
 func (r *Room) removeUser(uid int) {
-	for i, e := range r.InRoom {
+	for i, e := range r.inRoom {
 		if e.ID == uid {
-			r.InRoom = append(r.InRoom[:i], r.InRoom[i+1:]...)
+			r.inRoom = append(r.inRoom[:i], r.inRoom[i+1:]...)
+			r.Nums--
 		}
 	}
 }
 
 // Message mess
 type Message struct {
-	Content string
+	Oper int    `json:"oper"`
+	Mes  string `json:"mes"`
 }
 
 type empty struct{}
