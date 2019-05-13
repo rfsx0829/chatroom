@@ -26,12 +26,12 @@ func run(n need) error {
 
 func router(c *Controller) need {
 	http.HandleFunc("/au", c.AddUser)
+	http.HandleFunc("/ac", c.AddConn)
 	http.HandleFunc("/du", c.DelUser)
 	http.HandleFunc("/cr", c.Create)
 	http.HandleFunc("/dr", c.DelRoom)
 	http.HandleFunc("/er", c.Enter)
 	http.HandleFunc("/lr", c.Leave)
-	http.HandleFunc("/sm", c.Send)
 
 	return need{}
 }

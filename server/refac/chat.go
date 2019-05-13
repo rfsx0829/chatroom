@@ -12,6 +12,7 @@ type Platform struct {
 	RoomTable map[int]*Room
 	UserTable map[int]*User
 	ConnPool  map[int]*websocket.Conn
+	UserTemp  []int
 
 	errs   chan error
 	cancel chan empty
@@ -32,7 +33,7 @@ func NewPlat() *Platform {
 }
 
 // AddUser add user
-func (p *Platform) AddUser(id int, name string, conn *websocket.Conn) {
+func (p *Platform) AddUser(id int, name string) {
 	if _, ok := p.UserTable[id]; !ok {
 		u := User{
 			ID:          id,
@@ -41,6 +42,20 @@ func (p *Platform) AddUser(id int, name string, conn *websocket.Conn) {
 		}
 
 		p.UserTable[id] = &u
+		p.UserTemp = append(p.UserTemp, id)
+	}
+}
+
+// AddConn add conn
+func (p *Platform) AddConn(conn *websocket.Conn) {
+	if len(p.UserTemp) == 0 {
+		return
+	}
+
+	id := p.UserTemp[0]
+	p.UserTemp = p.UserTemp[1:]
+
+	if _, ok := p.UserTable[id]; ok {
 		p.ConnPool[id] = conn
 	}
 }
