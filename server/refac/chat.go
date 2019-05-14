@@ -15,7 +15,7 @@ type Platform struct {
 	UserTemp  []int
 
 	errs   chan error
-	cancel chan empty
+	cancel chan struct{}
 }
 
 // NewPlat create a platform
@@ -26,7 +26,7 @@ func NewPlat() *Platform {
 		ConnPool:  make(map[int]*websocket.Conn),
 
 		errs:   make(chan error),
-		cancel: make(chan empty),
+		cancel: make(chan struct{}),
 	}
 	go p.logerr()
 	return p
@@ -58,22 +58,30 @@ func (p *Platform) AddConn(conn *websocket.Conn) {
 	id := p.UserTemp[0]
 	p.UserTemp = p.UserTemp[1:]
 
-	if u, ok := p.UserTable[id]; ok {
+	if _, ok := p.UserTable[id]; ok {
 		p.ConnPool[id] = conn
-
-		for _, v := range p.RoomTable {
-			u.enterRoom(v)
-		}
 	}
 
 	go p.routine(id, conn)
 }
 
-func (p *Platform) routine(id int, conn *websocket.Conn) {
-	var x struct {
-		Oper int    `json:"oper"`
-		Mes  string `json:"mes"`
+// DelUser delete user
+func (p *Platform) DelUser(id int) {
+	delete(p.UserTable, id)
+	delete(p.ConnPool, id)
+}
+
+// GetRoomList return rmlist
+func (p *Platform) GetRoomList() []*Room {
+	list := make([]*Room, 0, len(p.RoomTable))
+	for _, v := range p.RoomTable {
+		list = append(list, v)
 	}
+	return list
+}
+
+func (p *Platform) routine(id int, conn *websocket.Conn) {
+	var x wsMes
 
 	for {
 		err := conn.ReadJSON(&x)
@@ -86,20 +94,26 @@ func (p *Platform) routine(id int, conn *websocket.Conn) {
 
 		log.Println("[routine]", x)
 
-		if x.Oper == 1 {
-			p.SendMess(id, &Message{x.Oper, x.Mes})
-		}
+		p.dealer(id, &x)
 	}
 }
 
-// DelUser delete user
-func (p *Platform) DelUser(id int) {
-	delete(p.UserTable, id)
-	delete(p.ConnPool, id)
+func (p *Platform) dealer(id int, mes *wsMes) {
+	switch mes.Oper {
+	case createRm:
+		p.createRoom(mes.Mes)
+	case deleteRm:
+		p.deleteRoom(mes.ID)
+	case enterRm:
+		p.enter(id, mes.ID)
+	case leaveRm:
+		p.leave(id)
+	case sendMes:
+		p.sendMess(id, mes)
+	}
 }
 
-// CreateRoom createroom
-func (p *Platform) CreateRoom(name string) {
+func (p *Platform) createRoom(name string) {
 	id := p.getUnusedID()
 	if id == -1 {
 		return
@@ -125,8 +139,7 @@ func (p *Platform) getUnusedID() int {
 	return -1
 }
 
-// DeleteRoom delete room
-func (p *Platform) DeleteRoom(id int) {
+func (p *Platform) deleteRoom(id int) {
 	if r, ok := p.RoomTable[id]; ok {
 		for _, e := range r.inRoom {
 			e.InWhichRoom = nil
@@ -135,8 +148,7 @@ func (p *Platform) DeleteRoom(id int) {
 	}
 }
 
-// Enter room
-func (p *Platform) Enter(uid, rid int) {
+func (p *Platform) enter(uid, rid int) {
 	if u, ok := p.UserTable[uid]; ok {
 		if r, ok := p.RoomTable[rid]; ok {
 			u.InWhichRoom = r
@@ -146,8 +158,7 @@ func (p *Platform) Enter(uid, rid int) {
 	}
 }
 
-//Leave room
-func (p *Platform) Leave(uid int) {
+func (p *Platform) leave(uid int) {
 	if u, ok := p.UserTable[uid]; ok {
 		if u.InWhichRoom != nil {
 			u.InWhichRoom.removeUser(uid)
@@ -156,8 +167,7 @@ func (p *Platform) Leave(uid int) {
 	}
 }
 
-// SendMess sendmess
-func (p *Platform) SendMess(from int, mes *Message) {
+func (p *Platform) sendMess(from int, mes *wsMes) {
 	if u, ok := p.UserTable[from]; ok {
 		for _, e := range u.InWhichRoom.inRoom {
 			p.send(e.ID, mes)
@@ -165,7 +175,7 @@ func (p *Platform) SendMess(from int, mes *Message) {
 	}
 }
 
-func (p *Platform) send(to int, mes *Message) {
+func (p *Platform) send(to int, mes *wsMes) {
 	if con, ok := p.ConnPool[to]; ok {
 		if err := con.WriteJSON(mes); err != nil {
 			p.errs <- fmt.Errorf("[%d, %v]: %s", to, mes, err.Error())
@@ -183,15 +193,6 @@ func (p *Platform) logerr() {
 			return
 		}
 	}
-}
-
-// GetRoomList return rmlist
-func (p *Platform) GetRoomList() []*Room {
-	list := make([]*Room, 0, len(p.RoomTable))
-	for _, v := range p.RoomTable {
-		list = append(list, v)
-	}
-	return list
 }
 
 // User user
@@ -230,10 +231,19 @@ func (r *Room) removeUser(uid int) {
 	}
 }
 
-// Message mess
-type Message struct {
-	Oper int    `json:"oper"`
-	Mes  string `json:"mes"`
+type wsMes struct {
+	Oper oper `json:"oper"`
+
+	ID  int    `json:"id"`
+	Mes string `json:"mes"`
 }
 
-type empty struct{}
+type oper uint
+
+const (
+	createRm oper = iota
+	deleteRm
+	enterRm
+	leaveRm
+	sendMes
+)

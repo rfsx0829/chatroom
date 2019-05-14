@@ -1,6 +1,7 @@
 package refac
 
 import (
+	"log"
 	"net/http"
 
 	"go.uber.org/dig"
@@ -21,6 +22,7 @@ func Run() {
 }
 
 func run(n need) error {
+	log.Println("Listening At localhost:8089")
 	return http.ListenAndServe(":8089", nil)
 }
 
@@ -36,5 +38,4 @@ func router(c *Controller) need {
 }
 
 func middle(c *Controller) {
-	c.plat.CreateRoom("r1")
 }
