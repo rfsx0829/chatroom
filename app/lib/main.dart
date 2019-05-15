@@ -1,81 +1,88 @@
+import 'package:flutter/foundation.dart';
+import 'package:web_socket_channel/io.dart';
 import 'package:flutter/material.dart';
-import 'tabs/chat.dart';
-import 'tabs/room.dart';
-import 'tabs/persons.dart';
-import 'drawer/drawer.dart';
-import 'constant/color.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
-void main() => runApp(
-  MaterialApp(
-    home: MyApp(),
-    theme: ThemeData(
-    ),
-    debugShowCheckedModeBanner: false,
-  )
-);
+void main() => runApp(MyApp());
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   @override
-  MyAppState createState() => MyAppState();
+  Widget build(BuildContext context) {
+    final title = 'WebSocket Demo';
+    return MaterialApp(
+      title: title,
+      home: MyHomePage(
+        title: title,
+        channel: IOWebSocketChannel.connect('ws://192.168.137.106:8080/ws'),
+      ),
+    );
+  }
 }
 
-class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
-  TabController controller;
+class MyHomePage extends StatefulWidget {
+  final String title;
+  final WebSocketChannel channel;
+
+  MyHomePage({Key key, @required this.title, @required this.channel})
+      : super(key: key);
 
   @override
-  void initState() {
-    super.initState();
+  _MyHomePageState createState() => _MyHomePageState();
+}
 
-    controller = TabController(
-      length: 3,
-      vsync: this,
-    );
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  TabBar getTabBar() {
-    return TabBar(
-      tabs: <Widget>[
-        Tab(
-          icon: Icon(Icons.account_balance),
-        ),
-        Tab(
-          icon: Icon(Icons.list),
-        ),
-        Tab(
-          icon: Icon(Icons.group),
-        )
-      ],
-      controller: controller,
-    );
-  }
-
-  TabBarView getTabBarView(var tabs) {
-    return TabBarView(
-      children: tabs,
-      controller: controller,
-    );
-  }
+class _MyHomePageState extends State<MyHomePage> {
+  TextEditingController _controller = TextEditingController();
+  List<Padding> list = <Padding>[];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Hello"),
-        bottom: getTabBar(),
-        backgroundColor: ConstantColor.bgColor,
+        title: Text(widget.title),
       ),
-      body: getTabBarView(<StatefulWidget>[
-        ChatTab(),
-        RoomsTab(),
-        PersonsTab(),
-      ]),
-      drawer: DrawerWidget(),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Form(
+              child: TextFormField(
+                controller: _controller,
+                decoration: InputDecoration(labelText: 'Send a message'),
+              ),
+            ),
+            StreamBuilder(
+              stream: widget.channel.stream,
+              builder: (context, snapshot) {
+                print(snapshot.data);
+                var p = Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24.0),
+                  child: Text(snapshot.hasData ? '${snapshot.data}' : ''),
+                );
+                list.add(p);
+                return Column(children: list);
+              },
+            )
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _sendMessage,
+        tooltip: 'Send message',
+        child: Icon(Icons.send),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  void _sendMessage() {
+    if (_controller.text.isNotEmpty) {
+      widget.channel.sink.add(_controller.text);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.channel.sink.close();
+    super.dispose();
   }
 }
