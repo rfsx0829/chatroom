@@ -9,6 +9,9 @@ class ChatTab extends StatefulWidget {
 class ChatState extends State<ChatTab> {
   @override
   Widget build(BuildContext context) {
-    return SignCard();
+    // return SignCard();
+    return Center(
+      child: Text("EMMM"),
+    );
   }
 }

@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 void main() => runApp(MyApp());
@@ -8,7 +8,7 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final title = 'WebSocket Demo';
+    final title = 'Chat Room';
     return MaterialApp(
       title: title,
       home: MyHomePage(

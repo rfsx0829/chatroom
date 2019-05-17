@@ -72,7 +72,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       ),
       body: getTabBarView(<StatefulWidget>[
         ChatTab(),
-        RoomsTab(),
+        // RoomsTab(),
         PersonsTab(),
       ]),
       drawer: DrawerWidget(),

@@ -1,72 +1,24 @@
-import 'dart:io';
-import 'dart:convert';
-
-class Person{
-  static int uid;
-  static String name;
-  static String pass;
-  static String email;
-
-  static List<String> messageBox;
-  static WebSocket conn;
-  static int roomID;
-  static String roomToken;
-  static bool online = false;
-
-  static FormData formData = FormData();
-  static dynamic response;
-
-  static void initConn() async {
-    conn = await WebSocket.connect("ws://192.168.2.1:8080/api/main");
-    conn.listen(onData);
-  }
-
-  static void close() async {
-    await conn.close();
-  }
-
-  static void sendReq() async {
-    if(conn == null) {
-      initConn();
-    }
-    var data = jsonEncode(formData);
-    conn.add(data);
-  }
-
-  static void onData(str) {
-    response = jsonDecode(str);
-  }
-}
-
 class FormData {
-  int oper = Oper.DefaultOper;
-  UserInfo user = UserInfo();
-  RoomInfo room = RoomInfo();
-  Message mes = Message();
+  int oper = Oper.SendMes;
+  int id = 0;
+  String mes = "";
 
   Map<String, dynamic> toJson() => <String, dynamic> {
     "oper": this.oper,
-    "user": this.user,
-    "room": this.room,
+    "id": this.id,
     "mes": this.mes,
   };
 }
 
 class Oper{
-  static const DefaultOper = 0;
-  static const SignUp = 1;
-  static const SignIn = 2;
-  static const AddEmail = 3;
-  static const Create = 4;
-  static const Enter = 5;
-  static const Leave = 6;
-  static const SendMes = 7;
-  static const SendBox = 8;
-  static const GetRoomList = 9;
-  static const GetPersonsInRoom = 10;
-  static const Close = 11;
+  static const Create = 0;
+  static const Delete = 1;
+  static const Enter = 2;
+  static const Leave = 3;
+  static const SendMes = 4;
 }
 
+/*
 class UserInfo {
   UserInfo({
     this.uid,
@@ -124,4 +76,4 @@ class Message {
     var sub = str.substring(0, 19) + "+08:00";
     return sub;
   }
-}
+}*/

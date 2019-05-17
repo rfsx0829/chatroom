@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import 'package:app/card/card.dart';
 import 'package:app/constant/color.dart';
@@ -76,3 +77,4 @@ class SignCardState extends State<SignCard> {
   void signIn() async {
   }
 }
+*/
