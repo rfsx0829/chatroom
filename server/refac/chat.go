@@ -28,7 +28,15 @@ func NewPlat() *Platform {
 		errs:   make(chan error),
 		cancel: make(chan struct{}),
 	}
-	go p.logerr()
+	// go p.logerr()
+
+	p.RoomTable[1] = &Room{
+		ID:     1,
+		Name:   "DefaultRoom",
+		Nums:   0,
+		inRoom: make([]*User, 0, 2),
+	}
+
 	return p
 }
 
@@ -38,7 +46,7 @@ func (p *Platform) AddUser(id int, name string) {
 		u := User{
 			ID:          id,
 			Name:        name,
-			InWhichRoom: nil,
+			InWhichRoom: p.RoomTable[1],
 		}
 
 		p.UserTable[id] = &u
@@ -58,8 +66,9 @@ func (p *Platform) AddConn(conn *websocket.Conn) {
 	id := p.UserTemp[0]
 	p.UserTemp = p.UserTemp[1:]
 
-	if _, ok := p.UserTable[id]; ok {
+	if u, ok := p.UserTable[id]; ok {
 		p.ConnPool[id] = conn
+		u.InWhichRoom = p.RoomTable[1]
 	}
 
 	go p.routine(id, conn)
@@ -87,7 +96,7 @@ func (p *Platform) routine(id int, conn *websocket.Conn) {
 		err := conn.ReadJSON(&x)
 		if err != nil {
 			log.Println("[routine] Error. Will Delete Conn.", err)
-			p.UserTable[id].leaveRoom()
+			p.UserTable[id].InWhichRoom = p.RoomTable[1]
 			p.ConnPool[id] = nil
 			return
 		}
@@ -130,7 +139,7 @@ func (p *Platform) createRoom(name string) {
 }
 
 func (p *Platform) getUnusedID() int {
-	for i := 1; i < 300; i++ {
+	for i := 2; i < 300; i++ {
 		if _, ok := p.RoomTable[i]; !ok {
 			return i
 		}
@@ -142,7 +151,7 @@ func (p *Platform) getUnusedID() int {
 func (p *Platform) deleteRoom(id int) {
 	if r, ok := p.RoomTable[id]; ok {
 		for _, e := range r.inRoom {
-			e.InWhichRoom = nil
+			e.InWhichRoom = p.RoomTable[1]
 		}
 		delete(p.RoomTable, id)
 	}
@@ -160,10 +169,7 @@ func (p *Platform) enter(uid, rid int) {
 
 func (p *Platform) leave(uid int) {
 	if u, ok := p.UserTable[uid]; ok {
-		if u.InWhichRoom != nil {
-			u.InWhichRoom.removeUser(uid)
-			u.InWhichRoom = nil
-		}
+		u.InWhichRoom = p.RoomTable[1]
 	}
 }
 
@@ -205,13 +211,6 @@ type User struct {
 func (u *User) enterRoom(r *Room) {
 	u.InWhichRoom = r
 	r.inRoom = append(r.inRoom, u)
-}
-
-func (u *User) leaveRoom() {
-	if u.InWhichRoom != nil {
-		u.InWhichRoom.removeUser(u.ID)
-		u.InWhichRoom = nil
-	}
 }
 
 // Room room
