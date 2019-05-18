@@ -1,11 +1,13 @@
 class User {
   int id;
   String name;
+  String email;
   String avatar;
 
   User({
     this.id,
     this.name,
+    this.email,
     this.avatar,
   });
 
@@ -13,6 +15,7 @@ class User {
     return new User(
       id: data["id"],
       name: data["name"],
+      email: data["email"],
       avatar: data["avatar"],
     );
   }
@@ -20,6 +23,7 @@ class User {
   Map<String, dynamic> toJson() => {
     "id": id,
     "name": name,
+    "email": email,
     "avatar": avatar,
   };
 

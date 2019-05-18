@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
 import 'pages/about.dart';
 import 'header/header.dart';
+import 'package:app/common/common.dart';
 import 'dart:io';
 
-class DrawerWidget extends StatefulWidget {
-  @override
-  DrawerState createState() => DrawerState();
-}
-
-class DrawerState extends State<DrawerWidget> {
+class DrawerWidget extends StatelessWidget {
+  DrawerWidget(this.user);
+  final User user;
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.all(0.0),
         children: <Widget>[
-          UserDrawerHeader(
-            userName: "Tom",
-            userEmail: "someone@163.com",
-          ),
+          UserDrawerHeader(user: user,),
           ListTile(
             title: Text("主页"),
             subtitle: Text("Main Page"),

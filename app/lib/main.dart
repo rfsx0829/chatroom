@@ -9,8 +9,8 @@ class ChatApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      theme: new ThemeData(primarySwatch: Colors.teal),
-      home: new ChatHome(),
+      theme: ThemeData(primarySwatch: Colors.teal),
+      home: ChatHome(),
     );
   }
 }

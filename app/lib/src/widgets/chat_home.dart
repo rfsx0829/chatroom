@@ -6,6 +6,7 @@ import 'package:app/common/common.dart';
 import 'package:flutter/material.dart';
 import 'chat_login.dart';
 import 'chat_message_list.dart';
+import 'package:app/drawer/drawer.dart';
 
 class ChatHome extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class _ChatHomeState extends State<ChatHome> {
   @override
   Widget build(BuildContext context) {
     if (user == null) {
-      return new Scaffold(
+      return Scaffold(
         appBar: new AppBar(
           title: new Text('Log In'),
         ),
@@ -63,6 +64,7 @@ class _ChatHomeState extends State<ChatHome> {
         title: new Text('Chat (${messages.length} messages)'),
       ),
       body: body,
+      drawer: DrawerWidget(user),
     );
   }
 
