@@ -30,6 +30,10 @@ func router(c *Controller) need {
 	http.HandleFunc("/au", c.AddUser)
 	http.HandleFunc("/ac", c.AddConn)
 	http.HandleFunc("/du", c.DelUser)
+	http.HandleFunc("/cr", c.CreateRoom)
+	http.HandleFunc("/dr", c.DeleteRoom)
+	http.HandleFunc("/er", c.EnterRoom)
+	http.HandleFunc("/lr", c.LeaveRoom)
 	http.HandleFunc("/gr", c.RoomList)
 
 	middle(c)

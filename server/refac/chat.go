@@ -1,7 +1,6 @@
 package refac
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -13,9 +12,6 @@ type Platform struct {
 	UserTable map[int]*User
 	ConnPool  map[int]*websocket.Conn
 	UserTemp  []int
-
-	errs   chan error
-	cancel chan struct{}
 }
 
 // NewPlat create a platform
@@ -24,9 +20,6 @@ func NewPlat() *Platform {
 		RoomTable: make(map[int]*Room),
 		UserTable: make(map[int]*User),
 		ConnPool:  make(map[int]*websocket.Conn),
-
-		errs:   make(chan error),
-		cancel: make(chan struct{}),
 	}
 	// go p.logerr()
 
@@ -46,7 +39,7 @@ func (p *Platform) AddUser(id int, name string) {
 		u := User{
 			ID:          id,
 			Name:        name,
-			InWhichRoom: p.RoomTable[1],
+			inWhichRoom: p.RoomTable[1],
 		}
 
 		p.UserTable[id] = &u
@@ -68,7 +61,7 @@ func (p *Platform) AddConn(conn *websocket.Conn) {
 
 	if u, ok := p.UserTable[id]; ok {
 		p.ConnPool[id] = conn
-		u.InWhichRoom = p.RoomTable[1]
+		u.inWhichRoom = p.RoomTable[1]
 	}
 
 	go p.routine(id, conn)
@@ -90,35 +83,21 @@ func (p *Platform) GetRoomList() []*Room {
 }
 
 func (p *Platform) routine(id int, conn *websocket.Conn) {
-	var x wsMes
+	var x Message
 
 	for {
 		err := conn.ReadJSON(&x)
 		if err != nil {
 			log.Println("[routine] Error. Will Delete Conn.", err)
-			p.UserTable[id].InWhichRoom = p.RoomTable[1]
+			p.UserTable[id].inWhichRoom.removeUser(id)
+			p.UserTable[id].inWhichRoom = p.RoomTable[1]
 			p.ConnPool[id] = nil
 			return
 		}
 
 		log.Println("[routine]", x)
 
-		p.dealer(id, &x)
-	}
-}
-
-func (p *Platform) dealer(id int, mes *wsMes) {
-	switch mes.Oper {
-	case createRm:
-		p.createRoom(mes.Mes)
-	case deleteRm:
-		p.deleteRoom(mes.ID)
-	case enterRm:
-		p.enter(id, mes.ID)
-	case leaveRm:
-		p.leave(id)
-	case sendMes:
-		p.sendMess(id, mes)
+		p.broadCastMes(&x)
 	}
 }
 
@@ -151,7 +130,7 @@ func (p *Platform) getUnusedID() int {
 func (p *Platform) deleteRoom(id int) {
 	if r, ok := p.RoomTable[id]; ok {
 		for _, e := range r.inRoom {
-			e.InWhichRoom = p.RoomTable[1]
+			e.inWhichRoom = p.RoomTable[1]
 		}
 		delete(p.RoomTable, id)
 	}
@@ -160,7 +139,7 @@ func (p *Platform) deleteRoom(id int) {
 func (p *Platform) enter(uid, rid int) {
 	if u, ok := p.UserTable[uid]; ok {
 		if r, ok := p.RoomTable[rid]; ok {
-			u.InWhichRoom = r
+			u.inWhichRoom = r
 			r.inRoom = append(r.inRoom, u)
 			r.Nums++
 		}
@@ -169,55 +148,44 @@ func (p *Platform) enter(uid, rid int) {
 
 func (p *Platform) leave(uid int) {
 	if u, ok := p.UserTable[uid]; ok {
-		u.InWhichRoom = p.RoomTable[1]
+		u.inWhichRoom = p.RoomTable[1]
 	}
 }
 
-func (p *Platform) sendMess(from int, mes *wsMes) {
-	if u, ok := p.UserTable[from]; ok {
-		for _, e := range u.InWhichRoom.inRoom {
-			p.send(e.ID, mes)
+func (p *Platform) broadCastMes(mes *Message) {
+	if u, ok := p.UserTable[mes.User.ID]; ok {
+		for _, e := range u.inWhichRoom.inRoom {
+			p.sendToConn(e.ID, mes)
 		}
 	}
 }
 
-func (p *Platform) send(to int, mes *wsMes) {
+func (p *Platform) sendToConn(to int, mes *Message) {
 	if con, ok := p.ConnPool[to]; ok {
 		if err := con.WriteJSON(mes); err != nil {
-			p.errs <- fmt.Errorf("[%d, %v]: %s", to, mes, err.Error())
-		}
-	}
-}
-
-func (p *Platform) logerr() {
-	for {
-		select {
-		case err := <-p.errs:
-			log.Println(err)
-		case <-p.cancel:
-			log.Println("PlatForm Log Canceld.")
-			return
+			log.Printf("[%d, %v]: %s", to, mes, err.Error())
 		}
 	}
 }
 
 // User user
 type User struct {
-	ID          int
-	Name        string
-	InWhichRoom *Room
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	inWhichRoom *Room
 }
 
 func (u *User) enterRoom(r *Room) {
-	u.InWhichRoom = r
+	u.inWhichRoom = r
 	r.inRoom = append(r.inRoom, u)
 }
 
 // Room room
 type Room struct {
-	ID     int    `json:"id"`
-	Name   string `json:"name"`
-	Nums   int    `json:"nums"`
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	Nums int    `json:"nums"`
+
 	inRoom []*User
 }
 
@@ -230,19 +198,9 @@ func (r *Room) removeUser(uid int) {
 	}
 }
 
-type wsMes struct {
-	Oper oper `json:"oper"`
-
-	ID  int    `json:"id"`
-	Mes string `json:"mes"`
+// Message message
+type Message struct {
+	ID   int    `json:"id"`
+	Str  string `json:"str"`
+	User *User  `json:"user"`
 }
-
-type oper uint
-
-const (
-	createRm oper = iota
-	deleteRm
-	enterRm
-	leaveRm
-	sendMes
-)

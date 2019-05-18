@@ -26,10 +26,7 @@ func NewController(pf *Platform) *Controller {
 
 // AddUser temp
 func (c *Controller) AddUser(w http.ResponseWriter, r *http.Request) {
-	var x struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
-	}
+	var x Message
 
 	if err := json.NewDecoder(r.Body).Decode(&x); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -40,7 +37,7 @@ func (c *Controller) AddUser(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("[AU]", x)
 
-	c.plat.AddUser(x.ID, x.Name)
+	c.plat.AddUser(x.ID, x.Str)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
 }
@@ -62,9 +59,7 @@ func (c *Controller) AddConn(w http.ResponseWriter, r *http.Request) {
 
 // DelUser delete user
 func (c *Controller) DelUser(w http.ResponseWriter, r *http.Request) {
-	var x struct {
-		ID int `json:"id"`
-	}
+	var x Message
 
 	if err := json.NewDecoder(r.Body).Decode(&x); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -75,7 +70,79 @@ func (c *Controller) DelUser(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("[DU]", x)
 
-	c.plat.DelUser(x.ID)
+	c.plat.DelUser(x.User.ID)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
+}
+
+// CreateRoom create room
+func (c *Controller) CreateRoom(w http.ResponseWriter, r *http.Request) {
+	var x Message
+
+	if err := json.NewDecoder(r.Body).Decode(&x); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		log.Println(err)
+		return
+	}
+
+	log.Println("[CR]", x)
+
+	c.plat.createRoom(x.Str)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
+}
+
+// DeleteRoom delete room
+func (c *Controller) DeleteRoom(w http.ResponseWriter, r *http.Request) {
+	var x Message
+
+	if err := json.NewDecoder(r.Body).Decode(&x); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		log.Println(err)
+		return
+	}
+
+	log.Println("[DR]", x)
+
+	c.plat.deleteRoom(x.ID)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
+}
+
+// EnterRoom enter room
+func (c *Controller) EnterRoom(w http.ResponseWriter, r *http.Request) {
+	var x Message
+
+	if err := json.NewDecoder(r.Body).Decode(&x); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		log.Println(err)
+		return
+	}
+
+	log.Println("[ER]", x)
+
+	c.plat.enter(x.User.ID, x.ID)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
+}
+
+// LeaveRoom leave room
+func (c *Controller) LeaveRoom(w http.ResponseWriter, r *http.Request) {
+	var x Message
+
+	if err := json.NewDecoder(r.Body).Decode(&x); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		log.Println(err)
+		return
+	}
+
+	log.Println("[LR]", x)
+
+	c.plat.leave(x.User.ID)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
 }
