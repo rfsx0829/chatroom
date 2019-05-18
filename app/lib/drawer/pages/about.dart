@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:app/tools/dio.dart';
 import 'dart:convert';
 
 class AboutPage extends StatefulWidget {
@@ -36,7 +35,8 @@ class AboutState extends State<AboutPage> {
   }
 
   void getVersion() async {
-    var res = await Tools.get("/latest");
+    // TODO:
+    dynamic res;
     var data = jsonDecode(res.data.toString());
     setState(() {
       version = data["version"];
