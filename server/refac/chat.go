@@ -62,6 +62,7 @@ func (p *Platform) AddConn(conn *websocket.Conn) {
 	if u, ok := p.UserTable[id]; ok {
 		p.ConnPool[id] = conn
 		u.inWhichRoom = p.RoomTable[1]
+		p.RoomTable[1].inRoom = append(p.RoomTable[1].inRoom, u)
 	}
 
 	go p.routine(id, conn)
@@ -172,6 +173,7 @@ func (p *Platform) sendToConn(to int, mes *Message) {
 type User struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
+	Avatar      string `json:"avatar"`
 	inWhichRoom *Room
 }
 
