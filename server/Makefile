@@ -3,3 +3,9 @@ build: main.go
 
 run: 
 	go run main.go
+
+dbuild: main dockerfile
+	docker build -t chatroom .
+
+drun:
+	docker run -d -p 8089:8089 chatroom:latest

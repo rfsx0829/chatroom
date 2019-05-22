@@ -39,7 +39,7 @@ func (c *Controller) AddUser(w http.ResponseWriter, r *http.Request) {
 
 	c.plat.AddUser(x.ID, x.Str)
 
-	x.User = &User{x.ID, x.Str, "http://39.98.162.91:9573/files/picture/a5b23209cbbf66a0ff209e37b37f79d9.png", nil}
+	x.User = &User{x.ID, x.Str, "rfsx0829@163.com", "http://39.98.162.91:9573/files/picture/a5b23209cbbf66a0ff209e37b37f79d9.png", nil}
 	data, err := json.Marshal(x)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
