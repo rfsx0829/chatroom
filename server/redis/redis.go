@@ -6,16 +6,26 @@ import (
 	"github.com/go-redis/redis"
 )
 
-// Client redis.Client
-var Client *redis.Client
+// Option expose config of redis
+type Option struct {
+	Host string `json:"host"`
+	Port int    `json:"port"`
+	Pass string `json:"pass"`
+	DB   int    `json:"db"`
+}
+
+// Client for redis.Client
+type Client struct {
+	cli *redis.Client
+}
 
 // InitClient init client
-func InitClient(host string, port int, password string, DB int) {
+func InitClient(o *Option) Client {
 	opt := redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", host, port),
-		Password: password,
-		DB:       DB,
+		Addr:     fmt.Sprintf("%s:%d", o.Host, o.Port),
+		Password: o.Pass,
+		DB:       o.DB,
 	}
 
-	Client = redis.NewClient(&opt)
+	return Client{redis.NewClient(&opt)}
 }

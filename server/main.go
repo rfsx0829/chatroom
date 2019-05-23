@@ -6,22 +6,32 @@ import (
 
 	"github.com/rfsx0829/chatroom/server/controller"
 	"github.com/rfsx0829/chatroom/server/plat"
+	"github.com/rfsx0829/chatroom/server/redis"
 	"go.uber.org/dig"
 )
 
 func main() {
 	con := dig.New()
 
+	con.Provide(func() *redis.Option {
+		return &redis.Option{
+			Host: "192.168.99.105",
+			Port: 31150,
+			Pass: "password",
+			DB:   1,
+		}
+	}())
+
+	con.Provide(redis.InitClient)
 	con.Provide(plat.New)
 	con.Provide(controller.New)
 
-	if err := con.Invoke(EntryPoint); err != nil {
+	if err := con.Invoke(entryPoint); err != nil {
 		log.Println(err)
 	}
 }
 
-// EntryPoint run the server
-func EntryPoint(c *controller.Controller) error {
+func entryPoint(c *controller.Controller) error {
 	http.HandleFunc("/au", c.AddUser)
 	http.HandleFunc("/ac", c.AddConn)
 	http.HandleFunc("/du", c.DelUser)
