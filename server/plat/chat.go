@@ -1,4 +1,4 @@
-package refac
+package plat
 
 import (
 	"log"
@@ -14,8 +14,8 @@ type Platform struct {
 	UserTemp  []int
 }
 
-// NewPlat create a platform
-func NewPlat() *Platform {
+// New create a platform
+func New() *Platform {
 	p := &Platform{
 		RoomTable: make(map[int]*Room),
 		UserTable: make(map[int]*User),
@@ -102,7 +102,8 @@ func (p *Platform) routine(id int, conn *websocket.Conn) {
 	}
 }
 
-func (p *Platform) createRoom(name string) {
+// CreateRoom create room
+func (p *Platform) CreateRoom(name string) {
 	id := p.getUnusedID()
 	if id == -1 {
 		return
@@ -128,7 +129,8 @@ func (p *Platform) getUnusedID() int {
 	return -1
 }
 
-func (p *Platform) deleteRoom(id int) {
+// DeleteRoom delete room
+func (p *Platform) DeleteRoom(id int) {
 	if r, ok := p.RoomTable[id]; ok {
 		for _, e := range r.inRoom {
 			e.inWhichRoom = p.RoomTable[1]
@@ -137,7 +139,8 @@ func (p *Platform) deleteRoom(id int) {
 	}
 }
 
-func (p *Platform) enter(uid, rid int) {
+// Enter room
+func (p *Platform) Enter(uid, rid int) {
 	if u, ok := p.UserTable[uid]; ok {
 		if r, ok := p.RoomTable[rid]; ok {
 			u.inWhichRoom = r
@@ -147,7 +150,8 @@ func (p *Platform) enter(uid, rid int) {
 	}
 }
 
-func (p *Platform) leave(uid int) {
+// Leave room
+func (p *Platform) Leave(uid int) {
 	if u, ok := p.UserTable[uid]; ok {
 		u.inWhichRoom = p.RoomTable[1]
 	}
