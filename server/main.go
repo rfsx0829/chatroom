@@ -15,12 +15,12 @@ func main() {
 
 	con.Provide(func() *redis.Option {
 		return &redis.Option{
-			Host: "192.168.99.105",
-			Port: 31150,
-			Pass: "password",
+			Host: "172.17.0.5",
+			Port: 6379,
+			Pass: "zdan1214",
 			DB:   1,
 		}
-	}())
+	})
 
 	con.Provide(redis.InitClient)
 	con.Provide(plat.New)

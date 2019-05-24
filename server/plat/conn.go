@@ -5,12 +5,12 @@ import "github.com/gorilla/websocket"
 // AddConn add conn
 func (p *Platform) AddConn(conn *websocket.Conn) {
 	// TODO: AddConn
-	/*if len(p.UserTemp) == 0 {
+	if len(p.waitConn) == 0 {
 		return
 	}
 
-	id := p.UserTemp[0]
-	p.UserTemp = p.UserTemp[1:]
+	id := p.waitConn[0]
+	p.waitConn = p.waitConn[1:]
 
 	if u, ok := p.UserTable[id]; ok {
 		p.ConnPool[id] = conn
@@ -18,5 +18,5 @@ func (p *Platform) AddConn(conn *websocket.Conn) {
 		p.RoomTable[1].inRoom = append(p.RoomTable[1].inRoom, u)
 	}
 
-	go p.routine(id, conn)*/
+	go p.routine(id, conn)
 }

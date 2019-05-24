@@ -13,6 +13,8 @@ type Platform struct {
 	UserTable map[int]*User
 	ConnPool  map[int]*websocket.Conn
 
+	waitConn []int
+
 	database redis.Client
 }
 
@@ -22,6 +24,7 @@ func New(db redis.Client) *Platform {
 		RoomTable: make(map[int]*Room),
 		UserTable: make(map[int]*User),
 		ConnPool:  make(map[int]*websocket.Conn),
+		waitConn:  make([]int, 0, 2),
 		database:  db,
 	}
 	// go p.logerr()

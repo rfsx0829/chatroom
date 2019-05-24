@@ -27,9 +27,13 @@ func (p *Platform) AddUser(id int, name string) {
 	}
 
 	// TODO: AddConn
+	if c, ok := p.ConnPool[id]; !ok || c == nil {
+		p.waitConn = append(p.waitConn, id)
+	}
 }
 
-func (p *Platform) delUser(id int) {
+// DelUser delete user
+func (p *Platform) DelUser(id int) {
 	delete(p.UserTable, id)
 	delete(p.ConnPool, id)
 }
