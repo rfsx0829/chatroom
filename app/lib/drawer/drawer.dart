@@ -3,10 +3,12 @@ import 'pages/about.dart';
 import 'header/header.dart';
 import 'package:app/common/common.dart';
 import 'dart:io';
+import 'package:dio/dio.dart';
 
 class DrawerWidget extends StatelessWidget {
-  DrawerWidget(this.user);
+  DrawerWidget(this.user, this.dio);
   final User user;
+  final Dio dio;
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -27,7 +29,7 @@ class DrawerWidget extends StatelessWidget {
             onTap: () {
               Navigator.of(context).pop();
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (BuildContext context) => AboutPage(),
+                builder: (BuildContext context) => AboutPage(dio),
               ));
             },
           ),

@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:dio/dio.dart';
 
 class AboutPage extends StatefulWidget {
+  final Dio dio;
+
+  AboutPage(this.dio);
+
   @override
-  AboutState createState() => AboutState();
+  AboutState createState() => AboutState(dio);
 }
 
 class AboutState extends State<AboutPage> {
   String version = "获取版本号失败...";
   bool versionOK = false;
+  final Dio dio;
+
+  AboutState(this.dio);
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +43,9 @@ class AboutState extends State<AboutPage> {
   }
 
   void getVersion() async {
-    // TODO:
-    dynamic res;
+    var res = await dio.get("http://39.98.162.91:8000/chatroom/latest");
     var data = jsonDecode(res.data.toString());
+    print(data);
     setState(() {
       version = data["version"];
     });

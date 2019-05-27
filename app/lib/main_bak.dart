@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tabs/chat.dart';
-import 'tabs/room.dart';
 import 'tabs/persons.dart';
-import 'drawer/drawer.dart';
 import 'constant/color.dart';
 /*
 void main() => runApp(
@@ -74,8 +72,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         ChatTab(),
         // RoomsTab(),
         PersonsTab(),
-      ]),
-      drawer: DrawerWidget(),
+      ])
     );
   }
 }

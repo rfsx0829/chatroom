@@ -31,21 +31,20 @@ class User {
 }
 
 class Message {
-  int id;
-  String str;
-
+  int type;
+  String content;
   User user;
 
   Message({
-    this.id,
-    this.str,
+    this.type,
+    this.content,
     this.user,
   });
 
   factory Message.fromJson(Map data) {
     return new Message(
-      id: data["id"],
-      str: data["str"],
+      type: data["type"],
+      content: data["content"],
       user: data["user"] == null
         ? null
         : data["user"] is User
@@ -55,8 +54,8 @@ class Message {
   }
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "str": str,
+    "type": type,
+    "content": content,
     "user": user,
   };
 

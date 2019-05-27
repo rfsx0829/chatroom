@@ -14,8 +14,8 @@ class ChatHome extends StatefulWidget {
 }
 
 class _ChatHomeState extends State<ChatHome> {
-  final Dio dio = new Dio(); 
-  final String host = 'http://192.168.137.106:8089';
+  final Dio dio = new Dio();
+  final String host = 'http://192.168.43.211:8089';
 
   User user;
   WebSocketChannel wsApp;
@@ -29,11 +29,12 @@ class _ChatHomeState extends State<ChatHome> {
         appBar: new AppBar(
           title: new Text('Log In'),
         ),
-        body: new ChatLogin(dio, host, (String auth) {
+        body: new ChatLogin(dio, host, (String auth) async {
           var obj = jsonDecode(auth);
           setState(() {
-            user = User.parse(obj["user"]);
-            wsApp = IOWebSocketChannel.connect("ws://192.168.137.106:8089/ac");
+            obj["id"] = int.parse(obj["id"]);
+            user = User.parse(obj);
+            wsApp = IOWebSocketChannel.connect("ws://192.168.43.211:8089/ac");
           });
 
           wsApp.stream.listen((mes) {
@@ -64,7 +65,7 @@ class _ChatHomeState extends State<ChatHome> {
         title: new Text('Chat (${messages.length} messages)'),
       ),
       body: body,
-      drawer: DrawerWidget(user),
+      drawer: DrawerWidget(user, dio),
     );
   }
 

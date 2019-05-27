@@ -1,4 +1,3 @@
-import 'package:app/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
@@ -20,7 +19,6 @@ class _ChatLoginState extends State<ChatLogin> {
   final String host;
   final HandleAuth handleAuth;
   String username, password;
-  int id;
   bool sending = false;
 
   _ChatLoginState(this.dio, this.host, this.handleAuth);
@@ -46,10 +44,12 @@ class _ChatLoginState extends State<ChatLogin> {
                     onPressed: () {
                       setState(() {
                         sending = true;
-                        id = int.parse(password);
                       });
 
-                      dio.post(host+"/au", data: Message(id: id, str: username, user: null).toJson())
+                      dio.post(host+"/au", data: {
+                        "name": username,
+                        "pass": password,
+                      })
                       .then((res) {
                         handleAuth(res.data);
                       }).catchError((e) {

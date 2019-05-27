@@ -29,7 +29,7 @@ class ChatMessageList extends StatelessWidget {
                         messages[i].user.name,
                         style: new TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: new Text(messages[i].str),
+                      subtitle: new Text(messages[i].content),
                     );
                   }),
         ),
@@ -43,12 +43,11 @@ class ChatMessageList extends StatelessWidget {
               onSubmitted: (String msg) {
                 if (msg.isNotEmpty) {
                   var m = Message(
-                    str: msg,
+                    content: msg,
                     user: user,
                   );
                   
                   channel.sink.add(jsonEncode(m));
-                  msg = "";
                 }
               },
             ),
