@@ -1,15 +1,17 @@
 package plat
 
-import "log"
+import (
+	"log"
+)
 
 type wsMes struct {
-	UID     int    `json:"uid"`
+	User    *User  `json:"user"`
 	Type    int    `json:"type"` // 0 for text, 1 for image
 	Content string `json:"content"`
 }
 
 func (p *Platform) broadCastMes(mes *wsMes) {
-	if u, ok := p.UserTable[mes.UID]; ok && u.inWhichRoom != nil {
+	if u, ok := p.UserTable[mes.User.ID]; ok && u.inWhichRoom != nil {
 		u.inWhichRoom.messages = append(u.inWhichRoom.messages, mes)
 		for _, e := range u.inWhichRoom.inRoom {
 			p.sendToConn(e.ID, mes)

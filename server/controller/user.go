@@ -13,13 +13,13 @@ func (c *Controller) AddUser(w http.ResponseWriter, r *http.Request) {
 		Pass string `json:"pass"`
 	}
 
-	log.Println("[AU]", x)
-
 	data, err := func() ([]byte, error) {
 		err := json.NewDecoder(r.Body).Decode(&x)
 		if err != nil {
 			return nil, err
 		}
+
+		log.Println("[AU]", x)
 
 		mp, err := c.plat.AddUser(x.Name, x.Pass)
 		if err != nil {
