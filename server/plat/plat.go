@@ -40,7 +40,7 @@ func New(db redis.Client) *Platform {
 }
 
 func (p *Platform) routine(id int, conn *websocket.Conn) {
-	var x Message
+	var x wsMes
 
 	for {
 		err := conn.ReadJSON(&x)

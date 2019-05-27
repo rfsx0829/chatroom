@@ -4,33 +4,31 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-
-	"github.com/rfsx0829/chatroom/server/plat"
 )
 
 // AddUser temp
 func (c *Controller) AddUser(w http.ResponseWriter, r *http.Request) {
-	var x plat.Message
-
-	if err := json.NewDecoder(r.Body).Decode(&x); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
-		log.Println(err)
-		return
+	var x struct {
+		Name string `json:"name"`
+		Pass string `json:"pass"`
 	}
 
 	log.Println("[AU]", x)
 
-	c.plat.AddUser(x.ID, x.Str)
+	data, err := func() ([]byte, error) {
+		err := json.NewDecoder(r.Body).Decode(&x)
+		if err != nil {
+			return nil, err
+		}
 
-	x.User = &plat.User{
-		ID:     x.ID,
-		Name:   x.Str,
-		Email:  "rfsx0829@163.com",
-		Avatar: "http://39.98.162.91:9573/files/picture/a5b23209cbbf66a0ff209e37b37f79d9.png",
-	}
+		mp, err := c.plat.AddUser(x.Name, x.Pass)
+		if err != nil {
+			return nil, err
+		}
 
-	data, err := json.Marshal(x)
+		return json.Marshal(mp)
+	}()
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
@@ -59,7 +57,9 @@ func (c *Controller) AddConn(w http.ResponseWriter, r *http.Request) {
 
 // DelUser delete user
 func (c *Controller) DelUser(w http.ResponseWriter, r *http.Request) {
-	var x plat.Message
+	var x struct {
+		ID int `json:"uid"`
+	}
 
 	if err := json.NewDecoder(r.Body).Decode(&x); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -70,7 +70,7 @@ func (c *Controller) DelUser(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("[DU]", x)
 
-	c.plat.DelUser(x.User.ID)
+	c.plat.DelUser(x.ID)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
 }

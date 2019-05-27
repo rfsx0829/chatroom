@@ -1,12 +1,19 @@
 package plat
 
+import (
+	"encoding/json"
+	"errors"
+)
+
 // Room room
 type Room struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 	Nums int    `json:"nums"`
 
-	inRoom []*User
+	inRoom   []*User
+	messages []*wsMes
+	pass     string
 }
 
 func (r *Room) removeUser(uid int) {
@@ -19,55 +26,74 @@ func (r *Room) removeUser(uid int) {
 }
 
 // GetRoomList return rmlist
-func (p *Platform) GetRoomList() []*Room {
+func (p *Platform) GetRoomList() ([]byte, error) {
 	list := make([]*Room, 0, len(p.RoomTable))
 	for _, v := range p.RoomTable {
 		list = append(list, v)
 	}
-	return list
+
+	return json.Marshal(list)
+}
+
+// GetRoomMessages return room messages
+func (p *Platform) GetRoomMessages(rid int) ([]byte, error) {
+	if r, ok := p.RoomTable[rid]; ok {
+		return json.Marshal(r.messages)
+	}
+	return nil, errors.New("No Such Room")
 }
 
 // CreateRoom create room
-func (p *Platform) CreateRoom(name string) {
+func (p *Platform) CreateRoom(name, pass string) error {
 	id := p.getUnusedID()
 	if id == -1 {
-		return
+		return errors.New("Too Many Rooms")
 	}
 
 	r := Room{
 		ID:     id,
 		Name:   name,
+		pass:   pass,
 		inRoom: make([]*User, 0, 5),
 		Nums:   0,
 	}
 
 	p.RoomTable[r.ID] = &r
+	return nil
 }
 
 // DeleteRoom delete room
 func (p *Platform) DeleteRoom(id int) {
 	if r, ok := p.RoomTable[id]; ok {
 		for _, e := range r.inRoom {
-			e.inWhichRoom = p.RoomTable[1]
+			r.removeUser(e.ID)
 		}
 		delete(p.RoomTable, id)
 	}
 }
 
 // Enter room
-func (p *Platform) Enter(uid, rid int) {
+func (p *Platform) Enter(uid, rid int, pass string) error {
 	if u, ok := p.UserTable[uid]; ok {
 		if r, ok := p.RoomTable[rid]; ok {
+			if !checkPassword(r.pass, pass) {
+				return errors.New("Invalid password")
+			}
 			u.inWhichRoom = r
 			r.inRoom = append(r.inRoom, u)
 			r.Nums++
 		}
+		return errors.New("No Such Room")
 	}
+	return errors.New("No Such User")
 }
 
 // Leave room
 func (p *Platform) Leave(uid int) {
 	if u, ok := p.UserTable[uid]; ok {
+		if u.inWhichRoom != nil {
+			u.inWhichRoom.removeUser(uid)
+		}
 		u.inWhichRoom = p.RoomTable[1]
 	}
 }

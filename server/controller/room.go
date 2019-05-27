@@ -4,15 +4,23 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-
-	"github.com/rfsx0829/chatroom/server/plat"
 )
 
 // CreateRoom create room
 func (c *Controller) CreateRoom(w http.ResponseWriter, r *http.Request) {
-	var x plat.Message
+	var x struct {
+		Name string `json:"name"`
+		Pass string `json:"password"`
+	}
 
-	if err := json.NewDecoder(r.Body).Decode(&x); err != nil {
+	if err := func() error {
+		err := json.NewDecoder(r.Body).Decode(&x)
+		if err != nil {
+			return err
+		}
+
+		return c.plat.CreateRoom(x.Name, x.Pass)
+	}(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 		log.Println(err)
@@ -21,14 +29,15 @@ func (c *Controller) CreateRoom(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("[CR]", x)
 
-	c.plat.CreateRoom(x.Str)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
 }
 
 // DeleteRoom delete room
 func (c *Controller) DeleteRoom(w http.ResponseWriter, r *http.Request) {
-	var x plat.Message
+	var x struct {
+		ID int `json:"rid"`
+	}
 
 	if err := json.NewDecoder(r.Body).Decode(&x); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -46,9 +55,20 @@ func (c *Controller) DeleteRoom(w http.ResponseWriter, r *http.Request) {
 
 // EnterRoom enter room
 func (c *Controller) EnterRoom(w http.ResponseWriter, r *http.Request) {
-	var x plat.Message
+	var x struct {
+		UID  int    `json:"uid"`
+		RID  int    `json:"rid"`
+		Pass string `json:"pass"`
+	}
 
-	if err := json.NewDecoder(r.Body).Decode(&x); err != nil {
+	if err := func() error {
+		err := json.NewDecoder(r.Body).Decode(&x)
+		if err != nil {
+			return err
+		}
+
+		return c.plat.Enter(x.UID, x.RID, x.Pass)
+	}(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
 		log.Println(err)
@@ -56,15 +76,15 @@ func (c *Controller) EnterRoom(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("[ER]", x)
-
-	c.plat.Enter(x.User.ID, x.ID)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
 }
 
 // LeaveRoom leave room
 func (c *Controller) LeaveRoom(w http.ResponseWriter, r *http.Request) {
-	var x plat.Message
+	var x struct {
+		ID int `json:"uid"`
+	}
 
 	if err := json.NewDecoder(r.Body).Decode(&x); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -75,7 +95,7 @@ func (c *Controller) LeaveRoom(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("[LR]", x)
 
-	c.plat.Leave(x.User.ID)
+	c.plat.Leave(x.ID)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
 }
@@ -84,9 +104,7 @@ func (c *Controller) LeaveRoom(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) RoomList(w http.ResponseWriter, r *http.Request) {
 	log.Println("[GR]")
 
-	list := c.plat.GetRoomList()
-
-	data, err := json.Marshal(list)
+	data, err := c.plat.GetRoomList()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
