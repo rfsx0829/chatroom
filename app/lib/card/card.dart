@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:app/constant/color.dart';
 
 class CardWidget extends StatefulWidget {
   const CardWidget({
@@ -9,7 +8,7 @@ class CardWidget extends StatefulWidget {
     this.lButtonFunc,
     this.rButtonText,
     this.rButtonFunc,
-    this.cardColor = ConstantColor.darkgrey,
+    this.cardColor = Colors.lime,
     this.elevation = 20.0,
     this.margin = const EdgeInsets.all(20.0),
   }) : super(key: key);
@@ -48,12 +47,12 @@ class CardWidgetState extends State<CardWidget> {
             child: ButtonBar(
               children: <Widget>[
                 FlatButton(
-                  child: Text(widget.lButtonText ?? "滚粗", style: TextStyle(color: ConstantColor.fontColor, fontSize: 20.0),),
+                  child: Text(widget.lButtonText ?? "滚粗", style: TextStyle(color: Colors.lime, fontSize: 20.0),),
                   onPressed: widget.lButtonFunc,
                   padding: EdgeInsets.all(10.0),
                 ),
                 FlatButton(
-                  child: Text(widget.rButtonText ?? "了解", style: TextStyle(color: ConstantColor.fontColor, fontSize: 20.0),),
+                  child: Text(widget.rButtonText ?? "了解", style: TextStyle(color: Colors.lime, fontSize: 20.0),),
                   onPressed: widget.rButtonFunc,
                   padding: EdgeInsets.all(10.0),
                 )

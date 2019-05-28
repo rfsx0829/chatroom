@@ -5,8 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:app/common/common.dart';
 import 'package:flutter/material.dart';
 import 'chat_login.dart';
-import 'chat_message_list.dart';
-import 'package:app/drawer/drawer.dart';
+import 'home.dart';
 
 class ChatHome extends StatefulWidget {
   @override
@@ -51,27 +50,22 @@ class _ChatHomeState extends State<ChatHome> {
 
     Widget body;
 
-    // Render different content depending on the state of the application.
     if (connecting)
-      body = new Text('Connecting to server...');
+      body = Text('Connecting to server...');
     else if (error)
-      body = new Text('An error occurred while connecting to the server.');
+      body = Text('An error occurred while connecting to the server.');
     else {
-      body = new ChatMessageList(wsApp, messages, user);
+      body = ChatApp(wsApp, messages, user, dio);
     }
 
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Chat (${messages.length} messages)'),
-      ),
-      body: body,
-      drawer: DrawerWidget(user, dio),
-    );
+    return body;
   }
 
   @override
   void dispose() {
-    wsApp.sink.close();
+    if(wsApp != null) {
+      wsApp.sink.close();
+    }
     super.dispose();
   }
 }

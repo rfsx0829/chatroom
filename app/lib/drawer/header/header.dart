@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:app/constant/color.dart';
 import 'package:app/common/common.dart';
 
 class UserDrawerHeader extends StatefulWidget {
@@ -19,7 +18,7 @@ class DrawerHeaderState extends State<UserDrawerHeader> {
   Widget build(BuildContext context) {
     return UserAccountsDrawerHeader(
       decoration: BoxDecoration(
-        color: ConstantColor.darkgrey,
+        color: Colors.lime,
       ),
       accountName: Text(widget.user.name),
       accountEmail: Text(widget.user.email),

@@ -43,9 +43,8 @@ class AboutState extends State<AboutPage> {
   }
 
   void getVersion() async {
-    var res = await dio.get("http://39.98.162.91:8000/chatroom/latest");
+    var res = await dio.get("http://localhost:8000/chatroom/latest");
     var data = jsonDecode(res.data.toString());
-    print(data);
     setState(() {
       version = data["version"];
     });
