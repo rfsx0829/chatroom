@@ -1,9 +1,10 @@
-import 'package:app/drawer/drawer.dart';
-import 'package:app/src/chat_message_list.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+import 'package:app/drawer/drawer.dart';
+import 'package:app/tabs/messages.dart';
 import 'package:app/common/common.dart';
-import 'package:dio/dio.dart';
 
 class ChatApp extends StatefulWidget {
   final WebSocketChannel channel;
