@@ -55,11 +55,14 @@ func (c *Controller) DeleteRoom(w http.ResponseWriter, r *http.Request) {
 
 // EnterRoom enter room
 func (c *Controller) EnterRoom(w http.ResponseWriter, r *http.Request) {
-	var x struct {
-		UID  int    `json:"uid"`
-		RID  int    `json:"rid"`
-		Pass string `json:"pass"`
-	}
+	var (
+		x struct {
+			UID  int    `json:"uid"`
+			RID  int    `json:"rid"`
+			Pass string `json:"pass"`
+		}
+		data []byte
+	)
 
 	if err := func() error {
 		err := json.NewDecoder(r.Body).Decode(&x)
@@ -67,7 +70,13 @@ func (c *Controller) EnterRoom(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 
-		return c.plat.Enter(x.UID, x.RID, x.Pass)
+		err = c.plat.Enter(x.UID, x.RID, x.Pass)
+		if err != nil {
+			return err
+		}
+
+		data, err = c.plat.GetRoomMessages(x.RID)
+		return err
 	}(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
@@ -77,7 +86,7 @@ func (c *Controller) EnterRoom(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("[ER]", x)
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
+	w.Write(data)
 }
 
 // LeaveRoom leave room
