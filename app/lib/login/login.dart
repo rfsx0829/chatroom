@@ -11,7 +11,7 @@ class ChatLogin extends StatefulWidget {
   ChatLogin(this.dio, this.host, this.handleAuth);
 
   @override
-  State createState() => new _ChatLoginState(dio, host, handleAuth);
+  State createState() => _ChatLoginState(dio, host, handleAuth);
 }
 
 class _ChatLoginState extends State<ChatLogin> {
@@ -25,22 +25,22 @@ class _ChatLoginState extends State<ChatLogin> {
 
   @override
   Widget build(BuildContext context) {
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: new Form(
-        child: new Column(
+      child: Form(
+        child: Column(
           children: <Widget>[
-            new TextField(
-              decoration: new InputDecoration(labelText: 'Username'),
+            TextField(
+              decoration: InputDecoration(labelText: 'Username'),
               onChanged: (String str) => setState(() => username = str),
             ),
-            new TextField(
-              decoration: new InputDecoration(labelText: 'Password'),
+            TextField(
+              decoration: InputDecoration(labelText: 'Password'),
               onChanged: (String str) => setState(() => password = str),
             ),
             sending
-                ? new CircularProgressIndicator()
-                : new RaisedButton(
+                ? CircularProgressIndicator()
+                : RaisedButton(
                     onPressed: () {
                       setState(() {
                         sending = true;
@@ -55,9 +55,11 @@ class _ChatLoginState extends State<ChatLogin> {
                       }).catchError((e) {
                         showDialog(
                           context: context,
-                          child: SimpleDialog(
-                            title: Text("Login Error: $e"),
-                          )
+                          builder: (BuildContext context) {
+                            return SimpleDialog(
+                              title: Text("Login Error: $e"),
+                            );
+                          },
                         );
                       }).whenComplete(() {
                         setState(() => sending = false);
@@ -65,9 +67,9 @@ class _ChatLoginState extends State<ChatLogin> {
                     },
                     color: Theme.of(context).primaryColor,
                     highlightColor: Theme.of(context).highlightColor,
-                    child: new Text(
+                    child: Text(
                       'SUBMIT',
-                      style: new TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white),
                     ),
                   )
           ],

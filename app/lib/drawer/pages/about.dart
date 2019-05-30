@@ -59,7 +59,7 @@ class FloatButton extends StatelessWidget {
       foregroundColor: Colors.white,
       icon: Icon(Icons.flag),
       label: Text("Check For Update !", maxLines: 1, style: TextStyle(fontSize: 20.0),),
-      onPressed: () => {
+      onPressed: () {
         Scaffold.of(context).showSnackBar(
           SnackBar(
             content: ListTile(
@@ -69,13 +69,13 @@ class FloatButton extends StatelessWidget {
             action: SnackBarAction(
               label: "知道了",
               textColor: Colors.white,
-              onPressed: () => {
-                Navigator.of(context).pop()
+              onPressed: () {
+                Navigator.of(context).pop();
               },
             ),
             duration: Duration(seconds: 2),
           )
-        )
+        );
       },
     );
   }
