@@ -1,55 +1,51 @@
-import 'dart:convert';
-
 import 'package:app/common/common.dart';
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
-class ChatMessageList extends StatelessWidget {
-  final WebSocketChannel channel;
+typedef void VoidFunc();
+typedef void StrFunc(String str);
 
+class ChatMessageList extends StatelessWidget  {
   final List<Message> messages;
   final User user;
+  final VoidFunc sendMes;
+  final StrFunc onChanged;
 
-  ChatMessageList(this.channel, this.messages, this.user);
+  ChatMessageList(this.messages, this.user, this.sendMes, this.onChanged);
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
+    return Column(
       children: <Widget>[
-        new Flexible(
+        Flexible(
           child: messages.isEmpty
-              ? new Text('Nobody has said anything yet... Break the silence!')
-              : new ListView.builder(
+              ? Text('Nobody has said anything yet... Break the silence!')
+              : ListView.builder(
                   itemCount: messages.length,
                   itemBuilder: (_, int i) {
-                    return new ListTile(
-                      leading: new Image.network(
+                    return ListTile(
+                      leading: Image.network(
                           '${messages[i].user.avatar}'),
-                      title: new Text(
+                      title: Text(
                         messages[i].user.name,
-                        style: new TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: new Text(messages[i].content),
+                      subtitle: Text(messages[i].content),
                     );
                   }),
         ),
-        new Divider(height: 1.0),
-        new Container(
-          decoration: new BoxDecoration(color: Theme.of(context).cardColor),
-          child: new Padding(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-            child: new TextField(
-              decoration: new InputDecoration(labelText: 'Send a message...'),
-              onSubmitted: (String msg) {
-                if (msg.isNotEmpty) {
-                  var m = Message(
-                    content: msg,
-                    user: user,
-                  );
-                  
-                  channel.sink.add(jsonEncode(m));
-                }
-              },
+        Divider(height: 1.0),
+        Container(
+          decoration: BoxDecoration(color: Theme.of(context).cardColor),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: TextField(
+              decoration: InputDecoration(
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: sendMes,
+                )
+              ),
+              onChanged: onChanged,
             ),
           ),
         )

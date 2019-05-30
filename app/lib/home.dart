@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:app/tabs/rooms.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -21,9 +24,11 @@ class ChatApp extends StatefulWidget {
 class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
   TabController controller;
   final WebSocketChannel channel;
-  final List<Message> messages;
   final User user;
   final Dio dio;
+
+  final List<Message> messages;
+  String tempString;
 
   ChatAppState(this.channel, this.messages, this.user, this.dio);
 
@@ -76,9 +81,20 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
         backgroundColor: Colors.lime,
       ),
       body: getTabBarView(<StatelessWidget>[
-        ChatMessageList(channel, messages, user),
-        Text(""),
-        Text(""),
+        RoomWidget(),
+        ChatMessageList(messages, user, () {
+          if (tempString.isNotEmpty) {
+            var m = Message(
+              content: tempString,
+              user: user,
+            );
+
+            channel.sink.add(jsonEncode(m));
+
+            setState(() => tempString = "");
+          }
+        }, (String str) => tempString = str),
+        RoomWidget(),
       ]),
       drawer: DrawerWidget(user, dio),
     );
