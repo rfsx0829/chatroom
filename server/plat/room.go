@@ -44,10 +44,10 @@ func (p *Platform) GetRoomMessages(rid int) ([]byte, error) {
 }
 
 // CreateRoom create room
-func (p *Platform) CreateRoom(name, pass string) error {
-	id := p.getUnusedID()
+func (p *Platform) CreateRoom(name, pass string) (id int, err error) {
+	id = p.getUnusedID()
 	if id == -1 {
-		return errors.New("Too Many Rooms")
+		return 0, errors.New("Too Many Rooms")
 	}
 
 	r := Room{
@@ -59,7 +59,7 @@ func (p *Platform) CreateRoom(name, pass string) error {
 	}
 
 	p.RoomTable[r.ID] = &r
-	return nil
+	return id, nil
 }
 
 // DeleteRoom delete room

@@ -14,11 +14,12 @@ class ChatApp extends StatefulWidget {
   final List<Message> messages;
   final User user;
   final Dio dio;
+  final String host;
 
-  ChatApp(this.channel, this.messages, this.user, this.dio);
+  ChatApp(this.channel, this.messages, this.user, this.dio, this.host);
 
   @override
-  ChatAppState createState() => ChatAppState(channel, messages, user, dio);
+  ChatAppState createState() => ChatAppState(channel, messages, user, dio, host);
 }
 
 class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
@@ -26,11 +27,14 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
   final WebSocketChannel channel;
   final User user;
   final Dio dio;
+  final String host;
 
   final List<Message> messages;
   String tempString;
 
-  ChatAppState(this.channel, this.messages, this.user, this.dio);
+  List<Room> rooms = [];
+
+  ChatAppState(this.channel, this.messages, this.user, this.dio, this.host);
 
   @override
   void initState() {
@@ -81,7 +85,17 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
         backgroundColor: Colors.lime,
       ),
       body: getTabBarView(<StatelessWidget>[
-        RoomWidget(),
+        RoomWidget(rooms, (String name, String pass) {
+          var req = {
+            "name": name,
+            "pass": pass,
+          };
+
+          dio.post(host+"/cr", data: req).then((res) {
+            var id = res.data["id"];
+            setState(() => rooms.add(Room(id: id, name: name, nums: 0)));
+          }).catchError((e) {}).whenComplete(() {});
+        }),
         ChatMessageList(messages, user, () {
           if (tempString.isNotEmpty) {
             var m = Message(
@@ -94,7 +108,6 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
             setState(() => tempString = "");
           }
         }, (String str) => tempString = str),
-        RoomWidget(),
       ]),
       drawer: DrawerWidget(user, dio),
     );

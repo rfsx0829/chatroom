@@ -28,7 +28,7 @@ class ChatHome extends StatefulWidget {
 
 class _ChatHomeState extends State<ChatHome> {
   final Dio dio = new Dio();
-  final String host = 'http://39.98.162.91:8089';
+  final String host = 'http://localhost:8089';
 
   User user;
   WebSocketChannel wsApp;
@@ -47,7 +47,7 @@ class _ChatHomeState extends State<ChatHome> {
           setState(() {
             obj["id"] = int.parse(obj["id"]);
             user = User.parse(obj);
-            wsApp = IOWebSocketChannel.connect("ws://39.98.162.91:8089/ac");
+            wsApp = IOWebSocketChannel.connect("ws://localhost:8089/ac");
           });
 
           wsApp.stream.listen((mes) {
@@ -69,7 +69,7 @@ class _ChatHomeState extends State<ChatHome> {
     else if (error)
       body = Text('An error occurred while connecting to the server.');
     else {
-      body = ChatApp(wsApp, messages, user, dio);
+      body = ChatApp(wsApp, messages, user, dio, host);
     }
 
     return body;

@@ -8,10 +8,13 @@ import (
 
 // CreateRoom create room
 func (c *Controller) CreateRoom(w http.ResponseWriter, r *http.Request) {
-	var x struct {
-		Name string `json:"name"`
-		Pass string `json:"password"`
-	}
+	var (
+		x struct {
+			Name string `json:"name"`
+			Pass string `json:"pass"`
+		}
+		data []byte
+	)
 
 	if err := func() error {
 		err := json.NewDecoder(r.Body).Decode(&x)
@@ -19,7 +22,15 @@ func (c *Controller) CreateRoom(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 
-		return c.plat.CreateRoom(x.Name, x.Pass)
+		id, err := c.plat.CreateRoom(x.Name, x.Pass)
+		if err != nil {
+			return err
+		}
+
+		data, err = json.Marshal(struct {
+			ID int `json:"id"`
+		}{id})
+		return err
 	}(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
@@ -30,7 +41,7 @@ func (c *Controller) CreateRoom(w http.ResponseWriter, r *http.Request) {
 	log.Println("[CR]", x)
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
+	w.Write(data)
 }
 
 // DeleteRoom delete room

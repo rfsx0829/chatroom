@@ -12,7 +12,7 @@ class User {
   });
 
   factory User.fromJson(Map data) {
-    return new User(
+    return User(
       id: data["id"],
       name: data["name"],
       email: data["email"],
@@ -27,7 +27,35 @@ class User {
     "avatar": avatar,
   };
 
-  static User parse(Map map) => new User.fromJson(map);
+  static User parse(Map map) => User.fromJson(map);
+}
+
+class Room {
+  int id;
+  int nums;
+  String name;
+
+  Room({
+    this.id,
+    this.nums,
+    this.name,
+  });
+
+  factory Room.fromJson(Map data) {
+    return Room(
+      id: data["id"],
+      nums: data["nums"],
+      name: data["name"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "nums": nums,
+    "name": name,
+  };
+
+  static Room parse(Map map) => Room.fromJson(map);
 }
 
 class Message {
@@ -42,7 +70,7 @@ class Message {
   });
 
   factory Message.fromJson(Map data) {
-    return new Message(
+    return Message(
       type: data["type"],
       content: data["content"],
       user: data["user"] == null
@@ -59,5 +87,5 @@ class Message {
     "user": user,
   };
 
-  static Message parse(Map map) => new Message.fromJson(map);
+  static Message parse(Map map) => Message.fromJson(map);
 }

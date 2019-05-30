@@ -1,5 +1,6 @@
-import 'package:app/common/common.dart';
 import 'package:flutter/material.dart';
+
+import 'package:app/common/common.dart';
 
 typedef void VoidFunc();
 typedef void StrFunc(String str);
