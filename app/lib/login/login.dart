@@ -1,5 +1,9 @@
+import 'dart:io';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
 
 typedef void HandleAuth(String auth);
 
@@ -19,9 +23,39 @@ class _ChatLoginState extends State<ChatLogin> {
   final String host;
   final HandleAuth handleAuth;
   String username, password;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController passController = TextEditingController();
+
   bool sending = false;
+  String tempPath = "";
 
   _ChatLoginState(this.dio, this.host, this.handleAuth);
+
+  @override
+  void initState() {
+    super.initState();
+    initFilePath();
+  }
+
+  void initFilePath() async {
+    var directory = await getApplicationDocumentsDirectory();
+    setState(() {
+      tempPath = directory.path;
+    });
+    try {
+      File f = File(tempPath+"/config.json");
+      var data = f.readAsStringSync();
+      var obj = jsonDecode(data);
+      setState(() {
+        username = obj["name"];
+        nameController.text = username;
+        password = obj["pass"];
+        passController.text = password;
+      });
+    }catch(e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +65,15 @@ class _ChatLoginState extends State<ChatLogin> {
         child: Column(
           children: <Widget>[
             TextField(
+              controller: nameController,
               decoration: InputDecoration(labelText: 'Username'),
               onChanged: (String str) => setState(() => username = str),
             ),
             TextField(
+              controller: passController,
               decoration: InputDecoration(labelText: 'Password'),
+              keyboardType: TextInputType.emailAddress,
+              obscureText: true,
               onChanged: (String str) => setState(() => password = str),
             ),
             sending
@@ -46,11 +84,16 @@ class _ChatLoginState extends State<ChatLogin> {
                         sending = true;
                       });
 
-                      dio.post(host+"/au", data: {
+                      var obj = {
                         "name": username,
                         "pass": password,
-                      })
+                      };
+
+                      dio.post(host+"/au", data: obj)
                       .then((res) {
+                        File f = File(tempPath + "/config.json");
+                        f.writeAsStringSync(jsonEncode(obj));
+
                         handleAuth(res.data);
                       }).catchError((e) {
                         showDialog(

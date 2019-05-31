@@ -31,6 +31,7 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
 
   final List<Message> messages;
   String tempString;
+  TextEditingController messageController = TextEditingController();
 
   List<Room> rooms = [];
 
@@ -129,9 +130,9 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
 
             channel.sink.add(jsonEncode(m));
 
-            setState(() => tempString = "");
+            setState(() {tempString = ""; messageController.text = "";});
           }
-        }, (String str) => tempString = str),
+        }, (String str) => tempString = str, messageController),
       ]),
       drawer: DrawerWidget(user, dio),
     );

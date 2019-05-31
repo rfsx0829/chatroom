@@ -10,8 +10,9 @@ class ChatMessageList extends StatelessWidget  {
   final User user;
   final VoidFunc sendMes;
   final StrFunc onChanged;
+  final TextEditingController controller;
 
-  ChatMessageList(this.messages, this.user, this.sendMes, this.onChanged);
+  ChatMessageList(this.messages, this.user, this.sendMes, this.onChanged, this.controller);
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +41,7 @@ class ChatMessageList extends StatelessWidget  {
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: TextField(
+              controller: controller,
               decoration: InputDecoration(
                 suffixIcon: IconButton(
                   icon: Icon(Icons.send),
