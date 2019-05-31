@@ -19,11 +19,7 @@ type Room struct {
 func (r *Room) removeUser(uid int) {
 	for i, e := range r.inRoom {
 		if e.ID == uid {
-			if i == len(r.inRoom)-1 {
-				r.inRoom = r.inRoom[:i]
-			} else {
-				r.inRoom = append(r.inRoom[:i], r.inRoom[i+1:]...)
-			}
+			r.inRoom = append(r.inRoom[:i], r.inRoom[i+1:]...)
 			r.Nums--
 		}
 	}
@@ -31,6 +27,11 @@ func (r *Room) removeUser(uid int) {
 
 func (r *Room) addUser(u *User) {
 	u.inWhichRoom = r
+	for _, e := range r.inRoom {
+		if e.ID == u.ID {
+			return
+		}
+	}
 	r.inRoom = append(r.inRoom, u)
 	r.Nums++
 }
@@ -89,9 +90,7 @@ func (p *Platform) Enter(uid, rid int, pass string) error {
 			if !checkPassword(r.pass, pass) {
 				return errors.New("Invalid password")
 			}
-			u.inWhichRoom = r
-			r.inRoom = append(r.inRoom, u)
-			r.Nums++
+			r.addUser(u)
 		}
 		return errors.New("No Such Room")
 	}
@@ -104,6 +103,6 @@ func (p *Platform) Leave(uid int) {
 		if u.inWhichRoom != nil {
 			u.inWhichRoom.removeUser(uid)
 		}
-		u.inWhichRoom = p.RoomTable[1]
+		p.RoomTable[1].addUser(u)
 	}
 }
