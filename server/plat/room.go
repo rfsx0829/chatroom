@@ -25,6 +25,12 @@ func (r *Room) removeUser(uid int) {
 	}
 }
 
+func (r *Room) addUser(u *User) {
+	u.inWhichRoom = r
+	r.inRoom = append(r.inRoom, u)
+	r.Nums++
+}
+
 // GetRoomList return rmlist
 func (p *Platform) GetRoomList() ([]byte, error) {
 	list := make([]*Room, 0, len(p.RoomTable))

@@ -14,11 +14,6 @@ type User struct {
 	inWhichRoom *Room
 }
 
-func (u *User) enterRoom(r *Room) {
-	u.inWhichRoom = r
-	r.inRoom = append(r.inRoom, u)
-}
-
 // AddUser add user
 func (p *Platform) AddUser(name, pass string) (map[string]string, error) {
 	mp, err := p.database.Get(name)

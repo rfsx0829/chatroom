@@ -14,8 +14,7 @@ func (p *Platform) AddConn(conn *websocket.Conn) {
 
 	if u, ok := p.UserTable[id]; ok {
 		p.ConnPool[id] = conn
-		u.inWhichRoom = p.RoomTable[1]
-		p.RoomTable[1].inRoom = append(p.RoomTable[1].inRoom, u)
+		p.RoomTable[1].addUser(u)
 	}
 
 	go p.routine(id, conn)

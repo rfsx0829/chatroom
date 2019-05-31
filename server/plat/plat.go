@@ -47,7 +47,7 @@ func (p *Platform) routine(id int, conn *websocket.Conn) {
 		if err != nil {
 			log.Println("[routine] Error. Will Delete Conn.", err)
 			p.UserTable[id].inWhichRoom.removeUser(id)
-			p.UserTable[id].inWhichRoom = p.RoomTable[1]
+			p.RoomTable[1].addUser(p.UserTable[id])
 			p.ConnPool[id] = nil
 			return
 		}
