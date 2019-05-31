@@ -19,7 +19,11 @@ type Room struct {
 func (r *Room) removeUser(uid int) {
 	for i, e := range r.inRoom {
 		if e.ID == uid {
-			r.inRoom = append(r.inRoom[:i], r.inRoom[i+1:]...)
+			if i == len(r.inRoom)-1 {
+				r.inRoom = r.inRoom[:i]
+			} else {
+				r.inRoom = append(r.inRoom[:i], r.inRoom[i+1:]...)
+			}
 			r.Nums--
 		}
 	}
