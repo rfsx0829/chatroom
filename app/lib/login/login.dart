@@ -23,8 +23,7 @@ class _ChatLoginState extends State<ChatLogin> {
   final String host;
   final HandleAuth handleAuth;
   String username, password;
-  TextEditingController nameController = TextEditingController();
-  TextEditingController passController = TextEditingController();
+  TextEditingController nameController, passController;
 
   bool sending = false;
   String tempPath = "";
@@ -34,7 +33,16 @@ class _ChatLoginState extends State<ChatLogin> {
   @override
   void initState() {
     super.initState();
+    nameController = TextEditingController();
+    passController = TextEditingController();
     initFilePath();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    passController.dispose();
+    super.dispose();
   }
 
   void initFilePath() async {

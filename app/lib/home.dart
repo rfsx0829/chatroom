@@ -15,11 +15,12 @@ class ChatApp extends StatefulWidget {
   final User user;
   final Dio dio;
   final String host;
+  final ScrollController scrollController;
 
-  ChatApp(this.channel, this.messages, this.user, this.dio, this.host);
+  ChatApp(this.channel, this.messages, this.user, this.dio, this.host, this.scrollController);
 
   @override
-  ChatAppState createState() => ChatAppState(channel, messages, user, dio, host);
+  ChatAppState createState() => ChatAppState(channel, messages, user, dio, host, scrollController);
 }
 
 class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
@@ -31,11 +32,12 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
 
   final List<Message> messages;
   String tempString;
-  TextEditingController messageController = TextEditingController();
+  TextEditingController messageController;
+  final ScrollController messageScrollController;
 
   List<Room> rooms = [];
 
-  ChatAppState(this.channel, this.messages, this.user, this.dio, this.host);
+  ChatAppState(this.channel, this.messages, this.user, this.dio, this.host, this.messageScrollController);
 
   @override
   void initState() {
@@ -45,11 +47,13 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
       length: 2,
       vsync: this,
     );
+    messageController = TextEditingController();
   }
 
   @override
   void dispose() {
     controller.dispose();
+    messageController.dispose();
     super.dispose();
   }
 
@@ -132,7 +136,7 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
 
             setState(() {tempString = ""; messageController.text = "";});
           }
-        }, (String str) => tempString = str, messageController),
+        }, (String str) => tempString = str, messageController, messageScrollController),
       ]),
       drawer: DrawerWidget(user, dio),
     );

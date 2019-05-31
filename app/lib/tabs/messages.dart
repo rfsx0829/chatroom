@@ -11,8 +11,9 @@ class ChatMessageList extends StatelessWidget  {
   final VoidFunc sendMes;
   final StrFunc onChanged;
   final TextEditingController controller;
+  final ScrollController scrollController;
 
-  ChatMessageList(this.messages, this.user, this.sendMes, this.onChanged, this.controller);
+  ChatMessageList(this.messages, this.user, this.sendMes, this.onChanged, this.controller, this.scrollController);
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +23,7 @@ class ChatMessageList extends StatelessWidget  {
           child: messages.isEmpty
               ? Text('Nobody has said anything yet... Break the silence!')
               : ListView.builder(
+                  controller: scrollController,
                   itemCount: messages.length,
                   itemBuilder: (_, int i) {
                     return ListTile(
