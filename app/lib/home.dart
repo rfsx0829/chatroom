@@ -41,7 +41,7 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
     super.initState();
 
     controller = TabController(
-      length: 3,
+      length: 2,
       vsync: this,
     );
   }
@@ -61,9 +61,6 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
         Tab(
           icon: Icon(Icons.list),
         ),
-        Tab(
-          icon: Icon(Icons.group),
-        )
       ],
       controller: controller,
     );
@@ -92,9 +89,36 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
           };
 
           dio.post(host+"/cr", data: req).then((res) {
-            var id = res.data["id"];
-            setState(() => rooms.add(Room(id: id, name: name, nums: 0)));
-          }).catchError((e) {}).whenComplete(() {});
+            var id = jsonDecode(res.data)["id"];
+            print(id);
+          }).catchError((e) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return SimpleDialog(
+                  title: Text("Error: $e"),
+                );
+              }
+            );
+          }).whenComplete(() {
+            dio.get(host+"/gr").then((data) {
+              var obj = jsonDecode(data.data);
+              List<Room> list = [];
+              for (var item in obj) {
+                list.add(Room(id: item["id"], name: item["name"], nums: item["nums"]));
+              }
+              setState(() => rooms = list);
+            }).catchError((err) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return SimpleDialog(
+                    title: Text("Error: $err"),
+                  );
+                }
+              );
+            }).whenComplete(() {});
+          });
         }),
         ChatMessageList(messages, user, () {
           if (tempString.isNotEmpty) {

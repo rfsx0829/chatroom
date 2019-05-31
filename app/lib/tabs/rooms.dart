@@ -27,7 +27,7 @@ class RoomWidget extends StatelessWidget {
         children: <Widget>[
           Flexible(
             child: rooms.isEmpty
-              ? Text("No room yes... Try to create one !")
+              ? Text("No room yet ... Try to create one !")
               : ListView.builder(
                 itemCount: rooms.length,
                 itemBuilder: (_, int i) {
