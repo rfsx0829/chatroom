@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
+import 'package:dio/dio.dart';
+
+import 'package:app/card/sign_card.dart';
 import 'package:app/common/common.dart';
 
-typedef void RoomFunc(String name, String pass);
+typedef void VoidFunc();
 
 class RoomWidget extends StatelessWidget {
   final List<Room> rooms;
-  final RoomFunc createRoom;
+  final VoidFunc getRoomList;
 
-  RoomWidget(this.rooms, this.createRoom);
+  final String host;
+  final Dio dio;
+
+  RoomWidget(this.rooms, this.getRoomList, this.host, this.dio);
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +24,10 @@ class RoomWidget extends StatelessWidget {
         icon: Icon(Icons.flag),
         label: Text("Create", maxLines: 1, style: TextStyle(fontSize: 20.0),),
         onPressed: () {
-          var name = "asd";
-          var pass = "passss";
-          createRoom(name, pass);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => SignCard(host, dio, getRoomList)
+          );
         },
       ),
       body: Column(

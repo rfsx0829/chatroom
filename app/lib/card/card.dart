@@ -47,12 +47,12 @@ class CardWidgetState extends State<CardWidget> {
             child: ButtonBar(
               children: <Widget>[
                 FlatButton(
-                  child: Text(widget.lButtonText ?? "滚粗", style: TextStyle(color: Colors.lime, fontSize: 20.0),),
+                  child: Text(widget.lButtonText ?? "滚粗", style: TextStyle(color: Colors.white, fontSize: 20.0),),
                   onPressed: widget.lButtonFunc,
                   padding: EdgeInsets.all(10.0),
                 ),
                 FlatButton(
-                  child: Text(widget.rButtonText ?? "了解", style: TextStyle(color: Colors.lime, fontSize: 20.0),),
+                  child: Text(widget.rButtonText ?? "了解", style: TextStyle(color: Colors.white, fontSize: 20.0),),
                   onPressed: widget.rButtonFunc,
                   padding: EdgeInsets.all(10.0),
                 )

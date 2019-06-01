@@ -103,18 +103,13 @@ class _ChatLoginState extends State<ChatLogin> {
                         f.writeAsStringSync(jsonEncode(obj));
 
                         handleAuth(res.data);
-                      }).catchError((e) {
-                        showDialog(
+                      }).catchError((e) => showDialog(
                           context: context,
-                          builder: (BuildContext context) {
-                            return SimpleDialog(
+                          builder: (BuildContext context) => SimpleDialog(
                               title: Text("Login Error: $e"),
-                            );
-                          },
-                        );
-                      }).whenComplete(() {
-                        setState(() => sending = false);
-                      });
+                          ))).whenComplete(() {
+                            setState(() => sending = false);
+                          });
                     },
                     color: Theme.of(context).primaryColor,
                     highlightColor: Theme.of(context).highlightColor,
