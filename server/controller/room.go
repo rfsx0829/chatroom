@@ -21,6 +21,7 @@ func (c *Controller) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return err
 		}
+		log.Println("[CR]", x)
 
 		id, err := c.plat.CreateRoom(x.Name, x.Pass)
 		if err != nil {
@@ -37,8 +38,6 @@ func (c *Controller) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-
-	log.Println("[CR]", x)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
@@ -80,6 +79,7 @@ func (c *Controller) EnterRoom(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return err
 		}
+		log.Println("[ER]", x)
 
 		err = c.plat.Enter(x.UID, x.RID, x.Pass)
 		if err != nil {
@@ -95,7 +95,6 @@ func (c *Controller) EnterRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("[ER]", x)
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }

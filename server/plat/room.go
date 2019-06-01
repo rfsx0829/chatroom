@@ -61,11 +61,12 @@ func (p *Platform) CreateRoom(name, pass string) (id int, err error) {
 	}
 
 	r := Room{
-		ID:     id,
-		Name:   name,
-		pass:   pass,
-		inRoom: make([]*User, 0, 5),
-		Nums:   0,
+		ID:       id,
+		Name:     name,
+		pass:     pass,
+		messages: make([]*wsMes, 0, 5),
+		inRoom:   make([]*User, 0, 5),
+		Nums:     0,
 	}
 
 	p.RoomTable[r.ID] = &r
@@ -91,10 +92,11 @@ func (p *Platform) Enter(uid, rid int, pass string) error {
 			}
 
 			if u.inWhichRoom != nil {
-				u.inWhichRoom.removeUser(r.ID)
+				u.inWhichRoom.removeUser(u.ID)
 			}
 			r.addUser(u)
 			u.inWhichRoom = r
+			return nil
 		}
 		return errors.New("No Such Room")
 	}
