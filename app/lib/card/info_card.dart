@@ -24,7 +24,7 @@ class InfoCardState extends State<InfoCard> {
   @override
   Widget build(BuildContext context) {
     var card = CardWidget(
-      cardChild: Column(
+      Column(
         children: <Widget>[
           Container(
             child: ClipOval(

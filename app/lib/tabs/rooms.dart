@@ -3,18 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
 import 'package:app/card/sign_card.dart';
+import 'package:app/card/room_card.dart';
 import 'package:app/common/common.dart';
 
 typedef void VoidFunc();
+typedef void Func(Room i, String p);
 
 class RoomWidget extends StatelessWidget {
   final List<Room> rooms;
   final VoidFunc getRoomList;
+  final Func enterRoom;
 
   final String host;
   final Dio dio;
 
-  RoomWidget(this.rooms, this.getRoomList, this.host, this.dio);
+  RoomWidget(this.rooms, this.getRoomList, this.enterRoom, this.host, this.dio);
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +26,10 @@ class RoomWidget extends StatelessWidget {
         foregroundColor: Colors.white,
         icon: Icon(Icons.flag),
         label: Text("Create", maxLines: 1, style: TextStyle(fontSize: 20.0),),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) => SignCard(host, dio, getRoomList)
-          );
-        },
+        onPressed: () => showDialog(
+          context: context,
+          builder: (BuildContext context) => SignCard(host, dio, getRoomList)
+        )
       ),
       body: Column(
         children: <Widget>[
@@ -44,6 +45,12 @@ class RoomWidget extends StatelessWidget {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text("${rooms[i].nums}人在线"),
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) => RoomCard((String pass) {
+                        enterRoom(rooms[i], pass);
+                      })
+                    ),
                   );
                 },
               )

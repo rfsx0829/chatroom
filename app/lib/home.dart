@@ -9,21 +9,24 @@ import 'package:app/drawer/drawer.dart';
 import 'package:app/tabs/messages.dart';
 import 'package:app/common/common.dart';
 
+typedef void Func(List<Message> newer);
+
 class ChatApp extends StatefulWidget {
   final WebSocketChannel channel;
   final List<Message> messages;
+  final Func updateMessages;
   final User user;
   final Dio dio;
   final String host;
   final ScrollController scrollController;
 
-  ChatApp(this.channel, this.messages, this.user, this.dio, this.host, this.scrollController);
+  ChatApp(this.channel, this.messages, this.updateMessages, this.user, this.dio, this.host, this.scrollController);
 
   @override
-  ChatAppState createState() => ChatAppState(channel, messages, user, dio, host, scrollController);
+  _ChatAppState createState() => _ChatAppState(channel, messages, updateMessages, user, dio, host, scrollController);
 }
 
-class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
+class _ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
   TabController controller;
   final WebSocketChannel channel;
   final User user;
@@ -31,13 +34,16 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
   final String host;
 
   final List<Message> messages;
+  final Func updateMessages;
+  
   String tempString;
   TextEditingController messageController;
   final ScrollController messageScrollController;
 
   List<Room> rooms = [];
+  Room currentRoom;
 
-  ChatAppState(this.channel, this.messages, this.user, this.dio, this.host, this.messageScrollController);
+  _ChatAppState(this.channel, this.messages, this.updateMessages, this.user, this.dio, this.host, this.messageScrollController);
 
   @override
   void initState() {
@@ -96,8 +102,31 @@ class ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
             }
             setState(() => rooms = list);
           });
+        }, (Room room, String pass) {
+          dio.post(host+"/er", data: {
+            "uid": user.id,
+            "rid": room.id,
+            "pass": pass,
+          }).then((res) {
+            var obj = jsonDecode(res.data);
+            List<Message> messageList = [];
+            for (var item in obj) {
+              messageList.add(Message(
+                content: item["content"],
+                type: item["type"],
+                user: User.fromJson(item["user"]),
+              ));
+            }
+            updateMessages(messageList);
+            setState(() => currentRoom = room);
+          }).catchError((e) => showDialog(
+            context: context,
+            builder: (BuildContext context) => SimpleDialog(
+              title: Text("Enter Error $e"),
+            )
+          ));
         }, host, dio),
-        ChatMessageList(messages, user, () {
+        ChatMessageList(messages, user, currentRoom, () {
           if (tempString.isNotEmpty) {
             var m = Message(
               content: tempString,

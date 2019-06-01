@@ -28,7 +28,7 @@ class SignCardState extends State<SignCard> {
   @override
   Widget build(BuildContext context) {
     var card = CardWidget(
-      cardChild: Column(
+      Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
@@ -57,6 +57,7 @@ class SignCardState extends State<SignCard> {
               ),
               style: TextStyle(color: Colors.white),
               keyboardType: TextInputType.emailAddress,
+              obscureText: true,
               onChanged: (str) {
                 setState(() {
                   pass = str;
@@ -89,10 +90,11 @@ class SignCardState extends State<SignCard> {
         title: Text("Create Error $e"),
       )
     )).whenComplete(callback);
-    cancel();
+    Navigator.of(context).pop();
   }
 
   void cancel() {
+    callback();
     Navigator.of(context).pop();
   }
 }

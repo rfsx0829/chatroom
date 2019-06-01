@@ -28,12 +28,13 @@ class ChatHome extends StatefulWidget {
 
 class _ChatHomeState extends State<ChatHome> {
   final Dio dio = new Dio();
-  final String host = 'http://localhost:8089';
+  final String host = 'http://192.168.43.211:8089';
 
   User user;
   WebSocketChannel wsApp;
   bool connecting = true, error = false;
   List<Message> messages = [];
+  ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -47,14 +48,12 @@ class _ChatHomeState extends State<ChatHome> {
           setState(() {
             obj["id"] = int.parse(obj["id"]);
             user = User.parse(obj);
-            wsApp = IOWebSocketChannel.connect("ws://localhost:8089/ac");
+            wsApp = IOWebSocketChannel.connect("ws://192.168.43.211:8089/ac");
           });
 
           wsApp.stream.listen((mes) {
             var obj = jsonDecode(mes);
-            setState(() {
-              messages.add(Message.fromJson(obj));
-            });
+            setState(() => messages.add(Message.fromJson(obj)));
           });
 
           setState(() => connecting = false);
@@ -69,7 +68,10 @@ class _ChatHomeState extends State<ChatHome> {
     else if (error)
       body = Text('An error occurred while connecting to the server.');
     else {
-      body = ChatApp(wsApp, messages, user, dio, host);
+      body = ChatApp(wsApp, messages, (List<Message> newer) => setState(() {
+        messages.clear();
+        newer.forEach((each) => messages.add(each));
+      }), user, dio, host, scrollController);
     }
 
     return body;

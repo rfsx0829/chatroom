@@ -9,15 +9,15 @@ class AboutPage extends StatefulWidget {
   AboutPage(this.dio);
 
   @override
-  AboutState createState() => AboutState(dio);
+  _AboutState createState() => _AboutState(dio);
 }
 
-class AboutState extends State<AboutPage> {
+class _AboutState extends State<AboutPage> {
   String version = "获取版本号失败...";
   bool versionOK = false;
   final Dio dio;
 
-  AboutState(this.dio);
+  _AboutState(this.dio);
 
   @override
   Widget build(BuildContext context) {

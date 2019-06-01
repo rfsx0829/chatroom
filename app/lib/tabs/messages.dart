@@ -8,12 +8,13 @@ typedef void StrFunc(String str);
 class ChatMessageList extends StatelessWidget  {
   final List<Message> messages;
   final User user;
+  final Room currentRoom;
   final VoidFunc sendMes;
   final StrFunc onChanged;
   final TextEditingController controller;
   final ScrollController scrollController;
 
-  ChatMessageList(this.messages, this.user, this.sendMes, this.onChanged, this.controller, this.scrollController);
+  ChatMessageList(this.messages, this.user, this.currentRoom, this.sendMes, this.onChanged, this.controller, this.scrollController);
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +48,18 @@ class ChatMessageList extends StatelessWidget  {
               decoration: InputDecoration(
                 suffixIcon: IconButton(
                   icon: Icon(Icons.send),
-                  onPressed: sendMes,
+                  onPressed: () {
+                    if (currentRoom == null) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => SimpleDialog(
+                          title: Text("Not in a room !"),
+                        )
+                      );
+                    } else {
+                      sendMes();
+                    }
+                  },
                 )
               ),
               onChanged: onChanged,

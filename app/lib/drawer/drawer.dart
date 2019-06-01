@@ -17,7 +17,7 @@ class DrawerWidget extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.all(0.0),
         children: <Widget>[
-          UserDrawerHeader(user: user,),
+          UserDrawerHeader(user),
           ListTile(
             title: Text("主页"),
             subtitle: Text("Main Page"),

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CardWidget extends StatefulWidget {
-  const CardWidget({
-    Key key,
-    @required this.cardChild,
+class CardWidget extends StatelessWidget {
+  CardWidget(this.cardChild,{
     this.lButtonText,
     this.lButtonFunc,
     this.rButtonText,
@@ -11,7 +9,7 @@ class CardWidget extends StatefulWidget {
     this.cardColor = Colors.lime,
     this.elevation = 20.0,
     this.margin = const EdgeInsets.all(20.0),
-  }) : super(key: key);
+  });
 
   final Color cardColor;
   final Widget cardChild;
@@ -26,34 +24,29 @@ class CardWidget extends StatefulWidget {
   final rButtonFunc;
 
   @override
-  CardWidgetState createState() => CardWidgetState();
-}
-
-class CardWidgetState extends State<CardWidget> {
-  @override
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
-      color: widget.cardColor,
-      elevation: widget.elevation,
-      margin: widget.margin,
+      color: cardColor,
+      elevation: elevation,
+      margin: margin,
       semanticContainer: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          widget.cardChild,
+          cardChild,
           ButtonTheme.bar(
             child: ButtonBar(
               children: <Widget>[
                 FlatButton(
-                  child: Text(widget.lButtonText ?? "滚粗", style: TextStyle(color: Colors.white, fontSize: 20.0),),
-                  onPressed: widget.lButtonFunc,
+                  child: Text(lButtonText ?? "滚粗", style: TextStyle(color: Colors.white, fontSize: 20.0),),
+                  onPressed: lButtonFunc,
                   padding: EdgeInsets.all(10.0),
                 ),
                 FlatButton(
-                  child: Text(widget.rButtonText ?? "了解", style: TextStyle(color: Colors.white, fontSize: 20.0),),
-                  onPressed: widget.rButtonFunc,
+                  child: Text(rButtonText ?? "了解", style: TextStyle(color: Colors.white, fontSize: 20.0),),
+                  onPressed: rButtonFunc,
                   padding: EdgeInsets.all(10.0),
                 )
               ],
