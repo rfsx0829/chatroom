@@ -89,6 +89,10 @@ func (p *Platform) Enter(uid, rid int, pass string) error {
 			if !checkPassword(r.pass, pass) {
 				return errors.New("Invalid password")
 			}
+
+			if u.inWhichRoom != nil {
+				u.inWhichRoom.removeUser(r.ID)
+			}
 			r.addUser(u)
 			u.inWhichRoom = r
 		}
@@ -102,7 +106,7 @@ func (p *Platform) Leave(uid int) {
 	if u, ok := p.UserTable[uid]; ok {
 		if u.inWhichRoom != nil {
 			u.inWhichRoom.removeUser(uid)
+			u.inWhichRoom = nil
 		}
-		p.RoomTable[1].addUser(u)
 	}
 }
