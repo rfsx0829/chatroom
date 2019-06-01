@@ -12,9 +12,8 @@ func (p *Platform) AddConn(conn *websocket.Conn) {
 	id := p.waitConn[0]
 	p.waitConn = p.waitConn[1:]
 
-	if u, ok := p.UserTable[id]; ok {
+	if _, ok := p.UserTable[id]; ok {
 		p.ConnPool[id] = conn
-		p.RoomTable[1].addUser(u)
 	}
 
 	go p.routine(id, conn)

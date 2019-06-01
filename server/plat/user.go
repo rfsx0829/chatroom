@@ -37,7 +37,7 @@ func (p *Platform) AddUser(name, pass string) (map[string]string, error) {
 		u := User{
 			ID:          id,
 			Name:        name,
-			inWhichRoom: p.RoomTable[1],
+			inWhichRoom: nil,
 		}
 
 		p.UserTable[id] = &u

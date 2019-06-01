@@ -26,7 +26,6 @@ func (r *Room) removeUser(uid int) {
 }
 
 func (r *Room) addUser(u *User) {
-	u.inWhichRoom = r
 	for _, e := range r.inRoom {
 		if e.ID == u.ID {
 			return
@@ -91,6 +90,7 @@ func (p *Platform) Enter(uid, rid int, pass string) error {
 				return errors.New("Invalid password")
 			}
 			r.addUser(u)
+			u.inWhichRoom = r
 		}
 		return errors.New("No Such Room")
 	}
