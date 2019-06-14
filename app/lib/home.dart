@@ -7,6 +7,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'package:app/drawer/drawer.dart';
 import 'package:app/tabs/messages.dart';
+import 'package:app/tabs/test_tab.dart';
 import 'package:app/common/common.dart';
 
 typedef void Func(List<Message> newer);
@@ -50,7 +51,7 @@ class _ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
     super.initState();
 
     controller = TabController(
-      length: 2,
+      length: 3,
       vsync: this,
     );
     messageController = TextEditingController();
@@ -72,6 +73,9 @@ class _ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
         Tab(
           icon: Icon(Icons.list),
         ),
+        Tab(
+          icon: Icon(Icons.adjust),
+        )
       ],
       controller: controller,
     );
@@ -110,11 +114,11 @@ class _ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
           }).then((res) {
             var obj = jsonDecode(res.data);
             List<Message> messageList = [];
-            for (var item in obj) {
+            for (var i = 0; i < obj.length; i++) {
               messageList.add(Message(
-                content: item["content"],
-                type: item["type"],
-                user: User.fromJson(item["user"]),
+                content: obj[i]["content"],
+                type: obj[i]["type"],
+                user: User.fromJson(obj[i]["user"]),
               ));
             }
             updateMessages(messageList);
@@ -138,6 +142,7 @@ class _ChatAppState extends State<ChatApp> with SingleTickerProviderStateMixin {
             setState(() {tempString = ""; messageController.text = "";});
           }
         }, (String str) => tempString = str, messageController, messageScrollController),
+        TestTab(),
       ]),
       drawer: DrawerWidget(user, dio),
     );

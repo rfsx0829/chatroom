@@ -53,7 +53,7 @@ class _ChatHomeState extends State<ChatHome> {
 
           wsApp.stream.listen((mes) {
             var obj = jsonDecode(mes);
-            setState(() => messages.add(Message.fromJson(obj)));
+            setState(() => messages.insert(0, Message.fromJson(obj)));
           });
 
           setState(() => connecting = false);
@@ -70,7 +70,9 @@ class _ChatHomeState extends State<ChatHome> {
     else {
       body = ChatApp(wsApp, messages, (List<Message> newer) => setState(() {
         messages.clear();
-        newer.forEach((each) => messages.add(each));
+        for (var i = 0; i < newer.length; i++) {
+          messages.insert(0, newer[i]);
+        }
       }), user, dio, host, scrollController);
     }
 

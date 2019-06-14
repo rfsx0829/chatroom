@@ -26,6 +26,7 @@ class ChatMessageList extends StatelessWidget  {
               : ListView.builder(
                   controller: scrollController,
                   itemCount: messages.length,
+                  reverse: true,
                   itemBuilder: (_, int i) {
                     return ListTile(
                       leading: Image.network(
